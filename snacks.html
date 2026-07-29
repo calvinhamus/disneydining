@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snack Credits &middot; WDW Dining</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23241535%27/%3E%3Ccircle cx=%2716%27 cy=%2717%27 r=%277%27 fill=%27%23F2B544%27/%3E%3Ccircle cx=%278%27 cy=%279%27 r=%274%27 fill=%27%233FD0C9%27/%3E%3Ccircle cx=%2724%27 cy=%279%27 r=%274%27 fill=%27%23FF7A5A%27/%3E%3C/svg%3E">
+<meta name="theme-color" content="#241535">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=DM+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241535; --panel:#31204A; --panel-2:#3B2758; --line:#4B3369;
+    --cyan:#3FD0C9; --coral:#FF7A5A; --gold:#F2B544; --cream:#F6EFE4; --muted:#A28CC0;
+    --dim:#6B5486; --green:#8FD35C;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--ink);color:var(--cream);font-family:"Public Sans",system-ui,sans-serif;
+    font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto;padding:20px 16px 64px}
+
+  header{border-bottom:2px solid var(--line);padding-bottom:18px;margin-bottom:16px}
+  .eyebrow{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--cyan);margin:0 0 10px}
+  h1{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 118,"wght" 800;
+    font-size:clamp(30px,8.5vw,46px);line-height:.94;letter-spacing:-.02em;
+    text-transform:uppercase;margin:0 0 12px}
+  h1 em{font-style:normal;color:var(--gold)}
+  .lede{color:var(--muted);font-size:14px;max-width:57ch;margin:0}
+  .lede b{color:var(--cream);font-weight:600}
+
+  /* credit meter — the signature element */
+  .meter{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:15px;margin-bottom:14px;position:sticky;top:46px;z-index:20}
+  .meter-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:11px}
+  .meter-lab{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted)}
+  .nights{display:flex;align-items:center;gap:8px}
+  .stepper{width:26px;height:26px;border-radius:6px;border:1px solid var(--line);
+    background:transparent;color:var(--cream);cursor:pointer;font-size:15px;line-height:1;
+    display:flex;align-items:center;justify-content:center;font-family:"DM Mono",monospace}
+  .stepper:hover{border-color:var(--muted)}
+  .stepper:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  .nights-n{font-family:"DM Mono",monospace;font-size:14px;min-width:22px;text-align:center}
+
+  .coins{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+  .coin{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--line);flex:none}
+  .coin.used{background:var(--gold);border-color:var(--gold)}
+  .coin.over{background:var(--coral);border-color:var(--coral)}
+
+  .tally{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+    padding-top:11px;border-top:1px solid var(--line)}
+  .t-cell{text-align:left}
+  .t-lab{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 2px}
+  .t-val{font-family:"DM Mono",monospace;font-size:15px;color:var(--cream);margin:0}
+  .t-val.good{color:var(--green)}
+  .t-val.bad{color:var(--coral)}
+  .meter-acts{display:flex;gap:6px;margin-top:11px}
+  .act{flex:1;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.1em;
+    text-transform:uppercase;background:transparent;color:var(--muted);
+    border:1px solid var(--line);border-radius:6px;padding:8px 6px;cursor:pointer}
+  .act:hover{color:var(--cream);border-color:var(--muted)}
+  .act.primary{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:500}
+  .act:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+  /* basket */
+  .basket{background:var(--panel-2);border:1px solid var(--gold);border-radius:10px;
+    padding:13px;margin-bottom:14px}
+  .basket.empty{border-color:var(--line);text-align:center;color:var(--muted);
+    font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+  .b-row{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--line)}
+  .b-row:last-child{border-bottom:none;padding-bottom:0}
+  .b-qty{font-family:"DM Mono",monospace;font-size:11px;color:var(--gold);width:22px;flex:none}
+  .b-name{flex:1;font-size:13.5px;min-width:0}
+  .b-where{font-family:"DM Mono",monospace;font-size:10px;color:var(--muted);display:block}
+  .b-price{font-family:"DM Mono",monospace;font-size:12px;color:var(--cream);flex:none}
+  .b-x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;
+    padding:0 2px;line-height:1;flex:none}
+  .b-x:hover{color:var(--coral)}
+
+  /* filters */
+  .filters{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:13px;margin-bottom:14px}
+  .flabel{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+  .frow{margin-bottom:11px}
+  .frow:last-child{margin-bottom:0}
+  .chips{display:flex;flex-wrap:wrap;gap:5px}
+  .chip{font-family:"DM Mono",monospace;font-size:10.5px;background:transparent;
+    color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer}
+  .chip:hover{color:var(--cream);border-color:var(--muted)}
+  .chip[aria-pressed=true]{background:var(--cream);color:var(--ink);border-color:var(--cream);font-weight:500}
+  .chip.veg[aria-pressed=true]{background:var(--green);border-color:var(--green);color:var(--ink)}
+  .chip.hide[aria-pressed=true]{background:var(--cyan);border-color:var(--cyan);color:var(--ink)}
+  .chip:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  #q{width:100%;background:var(--ink);border:1px solid var(--line);border-radius:7px;
+    color:var(--cream);font-family:"Public Sans",sans-serif;font-size:14px;padding:9px 11px}
+  #q::placeholder{color:var(--dim)}
+  #q:focus{outline:none;border-color:var(--cyan)}
+
+  .count{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);padding:0 2px 9px}
+
+  /* item rows */
+  ol{list-style:none;margin:0;padding:0}
+  .item{border:1px solid var(--line);border-radius:9px;background:var(--panel);
+    margin-bottom:7px;padding:11px 12px;display:flex;align-items:flex-start;gap:10px}
+  .item.picked{border-color:var(--gold);background:var(--panel-2)}
+  .item.trap{border-color:rgba(255,122,90,.42);background:rgba(255,122,90,.05)}
+  .i-main{flex:1;min-width:0}
+  .i-name{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 106,"wght" 700;
+    font-size:14.5px;line-height:1.25;margin:0 0 2px}
+  .i-where{font-family:"DM Mono",monospace;font-size:10px;color:var(--muted);margin:0 0 7px}
+  .i-meta{display:flex;flex-wrap:wrap;gap:5px;align-items:center;font-family:"DM Mono",monospace;font-size:10px}
+  .price{font-size:12.5px;font-weight:500}
+  .price.win{color:var(--green)}
+  .price.meh{color:var(--gold)}
+  .price.lose{color:var(--coral)}
+  .badge{border:1px solid var(--line);color:var(--muted);border-radius:3px;padding:1px 5px}
+  .badge.veg{color:var(--green);border-color:rgba(143,211,92,.45)}
+  .badge.chk{color:var(--gold);border-color:rgba(242,181,68,.45)}
+  .badge.no{color:var(--coral);border-color:rgba(255,122,90,.5)}
+  .i-note{font-size:12.5px;color:var(--muted);margin:7px 0 0;line-height:1.45}
+  .add{width:34px;height:32px;border-radius:6px;border:1px solid var(--line);flex:none;
+    background:transparent;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;
+    display:flex;align-items:center;justify-content:center;font-family:"DM Mono",monospace}
+  .add:hover{color:var(--cream);border-color:var(--muted)}
+  .add.on{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:500;font-size:12px}
+  .add:disabled{opacity:.3;cursor:not-allowed}
+  .add:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+  .empty{text-align:center;color:var(--muted);font-family:"DM Mono",monospace;font-size:11px;
+    padding:32px 16px;border:1px dashed var(--line);border-radius:10px}
+
+  footer{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--muted);line-height:1.6}
+  footer b{color:var(--cream);font-weight:600}
+  footer p{margin:0 0 10px}
+  footer p:last-child{margin-bottom:0}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:420px){.tally{grid-template-columns:1fr 1fr}}
+
+  /* ---- site navigation ---- */
+  .sitenav{position:sticky;top:0;z-index:60;background:rgba(36,21,53,.95);
+    -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+    border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:820px;margin:0 auto;padding:0 14px;display:flex;
+    align-items:center;gap:12px;height:46px}
+  .nav-home{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 118,"wght" 800;
+    font-size:13px;letter-spacing:.01em;text-transform:uppercase;color:var(--cream);
+    text-decoration:none;flex:none}
+  .nav-home span{color:var(--gold)}
+  .nav-home:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px}
+  .nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.07em;
+    text-transform:uppercase;color:var(--muted);text-decoration:none;padding:6px 10px;
+    border-radius:999px;white-space:nowrap}
+  .nav-links a:hover{color:var(--cream)}
+  .nav-links a[aria-current=page]{background:var(--cream);color:var(--ink);font-weight:500}
+  .nav-links a:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+</style>
+</head>
+<body>
+<nav class="sitenav">
+  <div class="nav-inner">
+    <a class="nav-home" href="index.html">WDW<span>Dining</span></a>
+    <div class="nav-links">
+        <a href="atlas.html">Atlas</a>
+        <a href="value.html">Value</a>
+        <a href="quick-service.html">Quick Service</a>
+        <a href="snacks.html" aria-current="page">Snacks</a>
+    </div>
+  </div>
+</nav>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Walt Disney World / Snack Credits / 2026</p>
+  <h1>Spend the <em>snack</em> credits</h1>
+  <p class="lede">One credit per night, and hundreds of ways to burn it. A snack credit is worth roughly <b>$6.50</b>, so anything cheaper than that is money you handed back. Set your nights, build a basket, and watch the surplus. The auto-fill button will do it for you.</p>
+</header>
+
+<div class="meter">
+  <div class="meter-head">
+    <span class="meter-lab">Nights on the plan</span>
+    <span class="nights">
+      <button class="stepper" id="minus" aria-label="Fewer nights">&minus;</button>
+      <span class="nights-n" id="nightsN">5</span>
+      <button class="stepper" id="plus" aria-label="More nights">+</button>
+    </span>
+  </div>
+  <div class="coins" id="coins"></div>
+  <div class="tally">
+    <div class="t-cell"><p class="t-lab">Credits used</p><p class="t-val" id="tUsed">0 / 5</p></div>
+    <div class="t-cell"><p class="t-lab">Retail captured</p><p class="t-val" id="tValue">$0.00</p></div>
+    <div class="t-cell"><p class="t-lab">Vs break-even</p><p class="t-val" id="tDelta">$0.00</p></div>
+  </div>
+  <div class="meter-acts">
+    <button class="act primary" id="autoBtn">Auto-fill best</button>
+    <button class="act" id="clearBtn">Clear basket</button>
+  </div>
+</div>
+
+<div class="basket empty" id="basket">Your basket is empty</div>
+
+<div class="filters">
+  <div class="frow"><input type="text" id="q" placeholder="Search an item, a land, a stand..." aria-label="Search"></div>
+  <div class="frow"><p class="flabel">Where</p><div class="chips" id="parkChips"></div></div>
+  <div class="frow"><p class="flabel">Kind</p><div class="chips" id="catChips"></div></div>
+  <div class="frow"><div class="chips">
+    <button class="chip veg" id="vegChip" aria-pressed="false">Plant-based</button>
+    <button class="chip hide" id="winChip" aria-pressed="false">Beats break-even only</button>
+    <button class="chip" id="trapChip" aria-pressed="false">Show me the traps</button>
+  </div></div>
+</div>
+
+<div class="count"><span id="shown">0</span> items shown</div>
+
+<ol id="list"></ol>
+<div class="empty" id="empty" hidden>Nothing matches those filters.</div>
+
+<footer>
+  <p><b>The one rule.</b> A snack credit is worth about $6.50, so target anything above $7 and pay cash for everything below. Eligible items carry a small purple and white DDP symbol on the menu board. The same item can be a snack at one stand and not at another, so check the board rather than assuming.</p>
+  <p><b>Alcohol is never a snack credit.</b> Beer, wine, and cocktails can only be swapped onto a meal credit at 21+, never a snack. Souvenir cups, mugs, and popcorn buckets are also excluded, so the Night Blossom in a regular cup works and the glowing souvenir version does not.</p>
+  <p><b>If a festival is running, stop reading and go there.</b> EPCOT's four festivals cover most of the calendar, and nearly every food item and non-alcoholic drink at the booths takes a snack credit. Items normally get excluded above about $8, which is exactly why the $9 and $10 festival portions are the best conversion on property. Festival alcohol and most festival funnel cakes are excluded.</p>
+  <p><b>Prices are estimates</b> built from current reporting and they move constantly. Use them to rank options, not to budget to the dollar.</p>
+  <p style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.55">Snack build 1</p>
+</footer>
+
+</div>
+
+<script>
+/* ---- storage shim -------------------------------------------------------
+   Inside the Claude artifact sandbox a window.storage API is provided.
+   On a normal web host it is not, so fall back to localStorage and keep
+   saved baskets and shortlists working. Degrades to in-memory if both
+   are unavailable (private browsing, storage disabled).                     */
+(function(){
+  if(window.storage && typeof window.storage.get === "function") return;
+  var mem = {};
+  var ok = false;
+  try{ window.localStorage.setItem("__t","1"); window.localStorage.removeItem("__t"); ok = true; }catch(e){ ok = false; }
+  var K = function(k){ return "wdw-dining:" + k; };
+  window.storage = {
+    get: function(k){
+      try{
+        var v = ok ? window.localStorage.getItem(K(k)) : (mem[k] === undefined ? null : mem[k]);
+        return Promise.resolve(v === null ? null : {key:k, value:v, shared:false});
+      }catch(e){ return Promise.resolve(null); }
+    },
+    set: function(k,v){
+      try{
+        if(ok) window.localStorage.setItem(K(k), v); else mem[k] = v;
+      }catch(e){ mem[k] = v; }
+      return Promise.resolve({key:k, value:v, shared:false});
+    },
+    delete: function(k){
+      try{ if(ok) window.localStorage.removeItem(K(k)); else delete mem[k]; }catch(e){}
+      return Promise.resolve({key:k, deleted:true, shared:false});
+    },
+    list: function(){ return Promise.resolve({keys:[], shared:false}); }
+  };
+})();
+
+/* e: 2 = reliably snack-eligible, 1 = check the board, 0 = not eligible (a trap)
+   q: how good it actually is, 1..10   v: 1 = plant-based   pr: estimated retail $ */
+const BREAKEVEN = 6.5;
+
+const S = [
+/* ===== EPCOT ===== */
+{n:"Festival booth savory portion",p:"EPCOT",l:"World Showcase kiosks",c:"Savory",pr:9.50,e:2,q:8,v:0,
+ note:"The single best snack credit on property. Items normally lose eligibility above about $8, so the $9 and $10 festival portions convert better than anything else. Four festivals cover most of the year."},
+{n:"Festival booth dessert portion",p:"EPCOT",l:"World Showcase kiosks",c:"Sweet",pr:8.50,e:2,q:8,v:0,
+ note:"Same logic as the savory portions. Festival of the Arts historically gives the most for the credit."},
+{n:"Festival specialty non-alcoholic drink",p:"EPCOT",l:"World Showcase kiosks",c:"Drink",pr:8.00,e:2,q:7,v:1,
+ note:"Eligible. The wine and beer flights at the same booth are not, no matter what the menu implies."},
+{n:"Caramel-dipped apple",p:"EPCOT",l:"Karamell-Kuche, Germany",c:"Sweet",pr:9.50,e:2,q:8,v:0,
+ note:"The most expensive thing in the best snack shop in EPCOT. Enormous, easily split three ways."},
+{n:"Salted caramel cupcake",p:"EPCOT",l:"Karamell-Kuche, Germany",c:"Sweet",pr:8.50,e:2,q:9,v:0,
+ note:"Consistently named one of the two best cupcakes at Walt Disney World."},
+{n:"Caramel cookie sandwich",p:"EPCOT",l:"Karamell-Kuche, Germany",c:"Sweet",pr:8.00,e:2,q:9,v:0,
+ note:"Grab these at closing and eat them for breakfast the next morning. That's the move."},
+{n:"Funnel cake",p:"EPCOT",l:"Fife & Drum, American Adventure",c:"Sweet",pr:8.00,e:2,q:7,v:0,
+ note:"One of the better funnel cake stands on property. Quality is variable everywhere, but a credit absorbs that risk."},
+{n:"Croissant doughnut",p:"EPCOT",l:"Refreshment Port",c:"Bakery",pr:7.50,e:2,q:8,v:0,
+ note:"Right at the World Showcase entrance and easy to walk past. Comes with a soft serve topping."},
+{n:"Napoleon",p:"EPCOT",l:"Les Halles, France",c:"Bakery",pr:7.50,e:2,q:9,v:0,
+ note:"Proper French pastry work. About a dozen items here clear the break-even line."},
+{n:"Eclair au chocolat",p:"EPCOT",l:"Les Halles, France",c:"Bakery",pr:7.00,e:2,q:8,v:0,
+ note:"Reliable, and the line moves faster than it looks."},
+{n:"Artisan gelato, two scoops",p:"EPCOT",l:"L'Artisan des Glaces, France",c:"Frozen",pr:7.50,e:2,q:9,v:0,
+ note:"Two scoops is the eligible size. Made on site and genuinely excellent."},
+{n:"Joffrey's specialty coffee",p:"EPCOT",l:"Joffrey's carts",c:"Drink",pr:7.50,e:2,q:6,v:1,
+ note:"The specialty drinks qualify. A plain brewed coffee does not clear break-even, so order up."},
+{n:"Croissant aux amandes",p:"EPCOT",l:"Les Halles, France",c:"Bakery",pr:6.50,e:2,q:8,v:0,
+ note:"Sits right at break-even. Fine to spend a credit on, better to pay cash if you have spare credits elsewhere."},
+{n:"School bread",p:"EPCOT",l:"Kringla Bakeri, Norway",c:"Bakery",pr:5.49,e:2,q:9,v:0,
+ note:"Well under break-even and worth ordering anyway. Cardamom bun, custard, coconut. Pay cash and put the credit on the School Bread Cold Brew beside it."},
+{n:"Lefse",p:"EPCOT",l:"Kringla Bakeri, Norway",c:"Bakery",pr:4.50,e:2,q:6,v:0,
+ note:"Well under break-even. Pay cash for this one."},
+
+/* ===== MAGIC KINGDOM ===== */
+{n:"Main Street caramel apple",p:"Magic Kingdom",l:"Confectionery, Main Street",c:"Sweet",pr:9.00,e:2,q:7,v:0,
+ note:"The decorated character apples are the priciest single snack in the park. Absurd sugar load, excellent conversion."},
+{n:"Tropical Serenade",p:"Magic Kingdom",l:"Aloha Isle, Adventureland",c:"Frozen",pr:8.00,e:2,q:9,v:1,
+ note:"The elaborate cousin of the Dole Whip that most people walk past. Dairy-free."},
+{n:"I Lava You Float",p:"Magic Kingdom",l:"Sunshine Tree Terrace",c:"Frozen",pr:8.00,e:2,q:8,v:1,
+ note:"Shorter line than Aloha Isle for a comparable drink. The Citrus Swirl here is the other one to know."},
+{n:"Fruit and Nutella waffle",p:"Magic Kingdom",l:"Sleepy Hollow, Liberty Square",c:"Sweet",pr:8.00,e:2,q:9,v:0,
+ note:"Eat it sitting on the bridge wall with the castle in front of you. Best snack-and-view combination in the park."},
+{n:"Two-scoop sundae",p:"Magic Kingdom",l:"Plaza Ice Cream Parlor",c:"Frozen",pr:8.50,e:2,q:8,v:0,
+ note:"Two scoops is the eligibility ceiling for ice cream creations. Anything larger gets refused."},
+{n:"Dole Whip float",p:"Magic Kingdom",l:"Aloha Isle, Adventureland",c:"Frozen",pr:7.50,e:2,q:9,v:1,
+ note:"The float, not the plain cup. Dairy-free by default and the most famous snack on property."},
+{n:"Grey Stuff cupcake",p:"Magic Kingdom",l:"Gaston's Tavern, Fantasyland",c:"Sweet",pr:7.50,e:2,q:8,v:0,
+ note:"One of the two cupcakes worth seeking out at Walt Disney World. Get it here rather than at Be Our Guest."},
+{n:"Seasonal sundae",p:"Magic Kingdom",l:"Storybook Treats, Fantasyland",c:"Frozen",pr:7.50,e:2,q:7,v:0,
+ note:"Rotates with the season and is usually the shortest ice cream line in Fantasyland."},
+{n:"Cheshire Cat Tail",p:"Magic Kingdom",l:"Cheshire Cafe, Fantasyland",c:"Bakery",pr:7.00,e:2,q:7,v:0,
+ note:"A big twisted pastry. Fine value, better than the Mickey pretzel next door."},
+{n:"LeFou's Brew",p:"Magic Kingdom",l:"Gaston's Tavern, Fantasyland",c:"Drink",pr:7.00,e:2,q:7,v:1,
+ note:"Frozen apple juice with a passion fruit foam. Not alcoholic despite the name and the room."},
+{n:"Cinnamon roll",p:"Magic Kingdom",l:"Gaston's Tavern, Fantasyland",c:"Bakery",pr:7.00,e:2,q:5,v:0,
+ note:"Clears break-even on price and disappoints on quality about half the time. Split it with someone."},
+{n:"Mickey pretzel",p:"Magic Kingdom",l:"Carts throughout",c:"Savory",pr:7.00,e:2,q:4,v:1,
+ note:"Technically fine value, consistently mediocre. Most seasoned planners consider this a wasted credit."},
+
+/* ===== HOLLYWOOD STUDIOS ===== */
+{n:"Cookies 'n Cream funnel cake",p:"Hollywood Studios",l:"Epic Eats, Toy Story Land",c:"Sweet",pr:9.00,e:2,q:9,v:0,
+ note:"A rare ice cream-topped funnel cake that keeps its snack eligibility, and it's freshly made. Widely considered the best funnel cake on property."},
+{n:"Blue Milk",p:"Hollywood Studios",l:"Milk Stand, Galaxy's Edge",c:"Drink",pr:8.50,e:2,q:6,v:1,
+ note:"Plant-based frozen drink, divisive and overpriced in cash. On a credit that stops mattering. Only the non-alcoholic version qualifies."},
+{n:"Green Milk",p:"Hollywood Studios",l:"Milk Stand, Galaxy's Edge",c:"Drink",pr:8.50,e:2,q:7,v:1,
+ note:"The better of the two and most people order the blue one. Get one of each and taste-test."},
+{n:"Baby Yoda Frappuccino",p:"Hollywood Studios",l:"Trolley Car Cafe",c:"Drink",pr:8.50,e:2,q:8,v:0,
+ note:"A secret menu item that every barista knows. Nearly all Starbucks specialty drinks at the seven in-park and Springs locations take a credit, including the $8 ones."},
+{n:"Specialty frappuccino",p:"Hollywood Studios",l:"Trolley Car Cafe",c:"Drink",pr:8.00,e:2,q:7,v:0,
+ note:"Order the most elaborate thing on the board. The plain brewed coffee at the same counter is a wasted credit."},
+{n:"Oga's non-alcoholic specialty",p:"Hollywood Studios",l:"Oga's Cantina, Galaxy's Edge",c:"Drink",pr:8.00,e:1,q:8,v:1,
+ note:"The non-alcoholic specialty drinks can qualify but this varies. Ask before you scan. Everything alcoholic here is out."},
+{n:"Lunch Box Tart",p:"Hollywood Studios",l:"Woody's Lunch Box, Toy Story Land",c:"Bakery",pr:6.50,e:2,q:8,v:0,
+ note:"Right at break-even, and genuinely good. Rotating seasonal flavors."},
+{n:"Popcorn",p:"Hollywood Studios",l:"Carts throughout",c:"Savory",pr:6.00,e:2,q:5,v:1,
+ note:"Just under break-even. The souvenir bucket version is not eligible at all."},
+
+/* ===== ANIMAL KINGDOM ===== */
+{n:"Baked mac and cheese with shrimp",p:"Animal Kingdom",l:"Savory snack stands",c:"Savory",pr:12.00,e:1,q:8,v:0,
+ note:"Effectively a meal for a snack credit and the best savory conversion at Walt Disney World. Eligibility at these stands has shifted before, so check the board."},
+{n:"Baked mac and cheese with pulled pork",p:"Animal Kingdom",l:"Savory snack stands",c:"Savory",pr:11.00,e:1,q:9,v:0,
+ note:"The better of the two versions. Animal Kingdom has quietly become the strongest park for savory snack credits."},
+{n:"Night Blossom",p:"Animal Kingdom",l:"Pongu Pongu, Pandora",c:"Drink",pr:8.00,e:2,q:9,v:1,
+ note:"Layered limeade with passion fruit boba. The regular cup takes a credit. The glowing souvenir mug does not, and it's poorly made anyway."},
+{n:"Anandapur sundae",p:"Animal Kingdom",l:"Ice Cream Truck, Asia",c:"Frozen",pr:8.00,e:2,q:7,v:0,
+ note:"Two scoops maximum for eligibility. Shaded seating nearby, which is the real value in this park."},
+{n:"Zebra Domes",p:"Animal Kingdom",l:"Also at Animal Kingdom Lodge",c:"Sweet",pr:8.00,e:2,q:9,v:0,
+ note:"Amarula liqueur cake domes. Free on the Boma buffet, otherwise a credit at The Mara or Johari Treasures at Kidani. Worth the detour."},
+{n:"Pot stickers",p:"Animal Kingdom",l:"Yak & Yeti Local Food Cafes",c:"Savory",pr:8.00,e:1,q:7,v:0,
+ note:"Listed as a side, which usually means eligible. Confirm at the register."},
+{n:"Isle of Java specialty coffee",p:"Animal Kingdom",l:"Isle of Java / Creature Comforts",c:"Drink",pr:7.00,e:2,q:6,v:1,
+ note:"Specialty drinks qualify, brewed coffee does not clear the line."},
+{n:"Lumpia",p:"Animal Kingdom",l:"Pongu Pongu, Pandora",c:"Savory",pr:6.50,e:2,q:7,v:0,
+ note:"Right at break-even. Order it alongside a Night Blossom and pay cash for one of them."},
+
+/* ===== RESORTS ===== */
+{n:"Seasonal specialty cupcake",p:"Resorts",l:"Contempo Cafe / Gasparilla Island Grill",c:"Sweet",pr:7.50,e:2,q:7,v:0,
+ note:"Resort cupcakes are hit and miss, but the Christmas and Halloween runs at these two are usually the good ones."},
+{n:"Two-scoop resort sundae",p:"Resorts",l:"Resort ice cream counters",c:"Frozen",pr:8.00,e:2,q:7,v:0,
+ note:"Two scoops is the ceiling. Beaches & Cream is the best of these by a distance if you can get in."},
+{n:"Fresh-made ice cream cookie sandwich",p:"Resorts",l:"Select ice cream counters",c:"Frozen",pr:8.50,e:1,q:9,v:0,
+ note:"Not the packaged cart version. These are built in front of you with baked-that-day cookies at only a few locations, so ask around."},
+{n:"BoardWalk Bakery cupcake",p:"Resorts",l:"BoardWalk Inn",c:"Sweet",pr:7.00,e:2,q:6,v:0,
+ note:"Used to be a reliable pick and has been inconsistent lately. Fine on a credit, not worth cash."},
+{n:"Bakery pastry",p:"Resorts",l:"Roaring Fork / resort food courts",c:"Bakery",pr:6.50,e:2,q:6,v:0,
+ note:"Right at break-even. Useful as a grab-and-go breakfast, which is what most people do with resort snack credits."},
+{n:"Prepackaged marketplace snack",p:"Resorts",l:"Resort gift shops",c:"Sweet",pr:5.00,e:2,q:4,v:0,
+ note:"Eligible and a poor use. This is where leftover credits go to die on the last morning. Pay cash."},
+
+/* ===== DISNEY SPRINGS ===== */
+{n:"Gideon's Bakehouse cookie",p:"Disney Springs",l:"The Landing",c:"Bakery",pr:8.50,e:1,q:10,v:0,
+ note:"Nearly half a pound and among the best baked goods in Florida. Third-party operator, so eligibility can change. Virtual queue most days."},
+{n:"Gelato, two scoops",p:"Disney Springs",l:"Vivoli il Gelato, The Landing",c:"Frozen",pr:8.50,e:2,q:9,v:0,
+ note:"A real Florentine gelateria operating since 1929. Not soft serve. Best frozen thing in Disney Springs."},
+{n:"Specialty donut",p:"Disney Springs",l:"Everglazed, West Side",c:"Bakery",pr:8.00,e:2,q:7,v:0,
+ note:"Absurdly loaded donuts. The spiked cold brew alongside is not a snack credit."},
+{n:"Starbucks specialty drink",p:"Disney Springs",l:"Marketplace / West Side",c:"Drink",pr:8.00,e:2,q:7,v:0,
+ note:"Both Springs locations participate. Order the elaborate one, not the drip coffee."},
+{n:"Sprinkles cupcake",p:"Disney Springs",l:"Town Center",c:"Sweet",pr:7.50,e:2,q:8,v:0,
+ note:"More consistent than most Disney-operated cupcakes. There's also a 24-hour cupcake ATM outside."},
+{n:"Pretzel",p:"Disney Springs",l:"Wetzel's Pretzels, Marketplace",c:"Savory",pr:7.00,e:2,q:6,v:1,
+ note:"Better than the Mickey pretzel in the parks, which is a low bar cleared."},
+{n:"Chocolate from The Ganachery",p:"Disney Springs",l:"The Landing",c:"Sweet",pr:6.00,e:2,q:9,v:0,
+ note:"Just under break-even per piece. Excellent chocolate, so pay cash and enjoy it guilt-free."},
+{n:"Goofy's Candy Co. creation",p:"Disney Springs",l:"Marketplace",c:"Sweet",pr:9.00,e:2,q:3,v:0,
+ note:"Clears break-even on price and is widely considered the worst quality-for-credit trade on property. Sugar-dipped everything. Avoid."},
+
+/* ===== ANYWHERE ===== */
+{n:"Churro",p:"Anywhere",l:"Carts in all four parks",c:"Sweet",pr:7.00,e:2,q:7,v:1,
+ note:"Reliable, everywhere, and clears the line. The seasonal specialty churros are usually better and sometimes not eligible."},
+{n:"Mickey ice cream bar",p:"Anywhere",l:"Ice cream carts",c:"Frozen",pr:6.50,e:2,q:5,v:0,
+ note:"Sits exactly at break-even, and the chocolate coating gets criticized as waxy. You can also buy these at a grocery store now, which has taken some of the shine off."},
+{n:"Popcorn, regular",p:"Anywhere",l:"Carts throughout",c:"Savory",pr:6.00,e:2,q:5,v:1,
+ note:"Just below break-even. If you want popcorn all trip, buy the refillable bucket with cash instead."},
+
+/* ===== ADDED IN THE SECOND SWEEP ===== */
+{n:"Cheeseburger spring rolls",p:"Magic Kingdom",l:"Spring Roll Cart, Adventureland",c:"Savory",pr:8.00,e:2,q:9,v:0,
+ note:"Repeatedly named the best savory snack in Magic Kingdom. Beef, cheese, and pickle in a fried shell. They sell out, so go early."},
+{n:"Bacon pecan caramel cinnamon roll",p:"Magic Kingdom",l:"Westward Ho, Frontierland",c:"Bakery",pr:8.49,e:2,q:9,v:0,
+ note:"Mickey-shaped, sweet and salty, and big enough for two. One of the strongest credit conversions in the park and it sells out by afternoon."},
+{n:"Sweet and spicy chicken waffle",p:"Magic Kingdom",l:"Sleepy Hollow, Liberty Square",c:"Savory",pr:12.00,e:1,q:9,v:0,
+ note:"The savory sibling of the Nutella waffle and arguably better. Priced like an entree, so eligibility varies. Check the board before you count on it."},
+{n:"Corn dog nuggets",p:"Magic Kingdom",l:"Casey's Corner, Main Street",c:"Savory",pr:11.00,e:1,q:8,v:0,
+ note:"A genuine Main Street rite of passage. Usually sold as an entree with a side, which puts snack eligibility in doubt. Ask first."},
+{n:"Citrus Swirl",p:"Magic Kingdom",l:"Sunshine Tree Terrace",c:"Frozen",pr:7.00,e:2,q:8,v:1,
+ note:"Orange soft serve swirled with frozen orange juice. The Orange Bird original, and a shorter line than Aloha Isle."},
+{n:"Iced Double Berry Matcha",p:"Magic Kingdom",l:"Main Street Bakery / all Starbucks",c:"Drink",pr:7.50,e:2,q:8,v:1,
+ note:"New in 2026 and an unexpected hit even with people who dislike matcha. Available at every Starbucks on property."},
+{n:"Dole Whip, plain cup",p:"Magic Kingdom",l:"Aloha Isle, Adventureland",c:"Frozen",pr:6.25,e:2,q:8,v:1,
+ note:"Just under break-even. Spend the extra dollar in cash for the float instead, or put the credit on the Tropical Serenade."},
+{n:"Cinnamon glazed almonds",p:"Magic Kingdom",l:"Nut carts, all parks",c:"Sweet",pr:7.00,e:2,q:7,v:1,
+ note:"You smell these before you see them. Clears break-even and keeps in a bag all day, which most snacks do not."},
+
+{n:"Pretzel nuggets with beer cheese",p:"EPCOT",l:"Block & Hans, American Adventure",c:"Savory",pr:8.50,e:2,q:8,v:0,
+ note:"Regularly named one of the best snacks in EPCOT and easy to miss behind the American Adventure. The beer alongside is not a snack credit."},
+{n:"School Bread Cold Brew",p:"EPCOT",l:"Kringla Bakeri, Norway",c:"Drink",pr:7.00,e:2,q:8,v:1,
+ note:"New in 2026 as a companion to the school bread itself. Sweet, creamy, and a better credit conversion than the bun it's named after."},
+{n:"Sweet crepe",p:"EPCOT",l:"Crepes a Emporter, France",c:"Sweet",pr:7.50,e:2,q:8,v:1,
+ note:"Walk-up window beside the full creperie, same kitchen, no wait. The savory galettes are entree-priced and usually not eligible."},
+{n:"Kakigori shaved ice",p:"EPCOT",l:"Japan pavilion cart",c:"Frozen",pr:7.50,e:2,q:8,v:1,
+ note:"A new 2026 cart outside the Japan restaurants. Fruity syrups with toppings like strawberry popping boba. Best hot-afternoon snack in World Showcase."},
+{n:"Gelato at Gelateria Toscana",p:"EPCOT",l:"Italy pavilion",c:"Frozen",pr:7.00,e:2,q:8,v:0,
+ note:"Overshadowed by L'Artisan des Glaces in France and about as good. Two scoops is the eligibility ceiling."},
+{n:"Bubble tea",p:"EPCOT",l:"Joy of Tea, China",c:"Drink",pr:7.50,e:2,q:7,v:1,
+ note:"Quietly one of the least crowded stands in World Showcase. The specialty drinks qualify."},
+{n:"Baklava",p:"EPCOT",l:"Morocco pavilion",c:"Sweet",pr:6.50,e:2,q:8,v:0,
+ note:"Right at break-even. Morocco is the emptiest pavilion in the park, so no line, ever."},
+{n:"Sushi doughnut",p:"EPCOT",l:"Festival of the Arts booths",c:"Savory",pr:9.00,e:2,q:8,v:0,
+ note:"A Festival of the Arts staple and the sort of $9 booth item that makes festival credits the best value on property."},
+
+{n:"Carrot Cake Cookie",p:"Hollywood Studios",l:"Trolley Car Cafe",c:"Sweet",pr:7.50,e:2,q:9,v:0,
+ note:"Technically a whoopie pie and one of the most beloved snacks at Walt Disney World. The only reason to stop at this Starbucks."},
+{n:"Outpost Mix",p:"Hollywood Studios",l:"Kat Saka's Kettle, Galaxy's Edge",c:"Savory",pr:7.00,e:2,q:7,v:1,
+ note:"Sweet and spicy popcorn in Batuu colors. Divisive, cheap on a credit, and the bag lasts most of the day."},
+{n:"Hollywood Scoops sundae",p:"Hollywood Studios",l:"Sunset Ranch Market",c:"Frozen",pr:8.00,e:2,q:8,v:0,
+ note:"Hand-scooped rather than soft serve, in a shaded corner of the Sunset Ranch food court. Two scoops maximum."},
+{n:"Ronto Wrap",p:"Hollywood Studios",l:"Ronto Roasters, Galaxy's Edge",c:"Savory",pr:13.00,e:1,q:9,v:0,
+ note:"Everyone calls it a snack and it eats like a meal, which is exactly why eligibility is unreliable. Ronto Roasters closes at 3pm and Docking Bay 7 takes over the classic version after that."},
+{n:"BaseLine pretzel with beer cheese",p:"Hollywood Studios",l:"BaseLine Tap House, Grand Avenue",c:"Savory",pr:8.00,e:2,q:8,v:0,
+ note:"Far better than the standard Mickey pretzel. The California drafts alongside are not snack credits."},
+
+{n:"Pulled pork and cheese fries",p:"Animal Kingdom",l:"Flame Tree Barbecue",c:"Savory",pr:10.50,e:2,q:9,v:0,
+ note:"One of the best savory credits on property. Eat them on the lower terraces facing Expedition Everest, not at the first seating area."},
+{n:"Cookie dough brownie ice cream sandwich",p:"Animal Kingdom",l:"Terra Treats, Discovery Island",c:"Frozen",pr:9.00,e:2,q:9,v:0,
+ note:"The 2026 breakout snack and the successor to the old Dino-Bite favorite. Brownie base, vanilla ice cream, cookie dough on top. Expect a line."},
+{n:"Churros with chili-strawberry dip",p:"Animal Kingdom",l:"Nomad Lounge, Discovery Island",c:"Sweet",pr:10.00,e:1,q:9,v:0,
+ note:"Substantially better than any cart churro on property, with chili-strawberry and vanilla crema dips. Lounge item, so confirm eligibility."},
+{n:"Cheeseburger steamed pods",p:"Animal Kingdom",l:"Satu'li Canteen, Pandora",c:"Savory",pr:8.00,e:2,q:9,v:0,
+ note:"A perennial fan favorite and one of the most-recommended items in the park. Two pods, bao-style."},
+{n:"Cheesecake pops",p:"Animal Kingdom",l:"Flame Tree Barbecue",c:"Sweet",pr:7.00,e:2,q:8,v:0,
+ note:"Rotating seasonal flavors, pumpkin in fall and cranberry-cherry at the holidays. Menu changes often."},
+{n:"Grilled corn on the cob",p:"Animal Kingdom",l:"Harambe Fruit Market, Africa",c:"Savory",pr:6.50,e:2,q:8,v:1,
+ note:"African-spiced and right at break-even. The rare healthy-adjacent snack that is actually worth ordering."},
+{n:"Dole Whip at Tamu Tamu",p:"Animal Kingdom",l:"Tamu Tamu Refreshments, Africa",c:"Frozen",pr:6.50,e:2,q:8,v:1,
+ note:"Shorter line than Magic Kingdom for the same thing. The rum-spiked version here is not a snack credit."},
+{n:"Zuri's sweets",p:"Animal Kingdom",l:"Zuri's Sweets Shop, Africa",c:"Sweet",pr:7.00,e:2,q:7,v:0,
+ note:"Small candy and bakery shop in Harambe that almost nobody walks into."},
+{n:"Mr. Kamal's fries",p:"Animal Kingdom",l:"Asia",c:"Savory",pr:7.50,e:1,q:7,v:1,
+ note:"Seasoned fries with dipping sauces. Guests have reported these losing snack eligibility, so confirm at the window."},
+{n:"Eight Spoons mac and cheese",p:"Animal Kingdom",l:"Eight Spoons Cafe, Discovery Island",c:"Savory",pr:9.50,e:1,q:7,v:0,
+ note:"One of the savory snack stands, but eligibility here has been inconsistent in guest reports. Check before you scan."},
+
+{n:"Beignets",p:"Resorts",l:"Sassagoula Floatworks, Port Orleans French Quarter",c:"Bakery",pr:7.50,e:2,q:9,v:0,
+ note:"A Port Orleans institution and the best resort snack on property. Order them fresh, not from the warming tray, and go at an off hour."},
+{n:"Tie-Dye Cheesecake",p:"Resorts",l:"Everything POP, Pop Century",c:"Sweet",pr:8.00,e:2,q:8,v:0,
+ note:"Psychedelic cheesecake on a red velvet base that tastes as good as it photographs. Worth a resort detour if you're on the Skyliner."},
+{n:"Pickle Dog",p:"Resorts",l:"Blue Ribbon Corn Dogs, BoardWalk",c:"Savory",pr:11.00,e:1,q:8,v:0,
+ note:"A hot dog wrapped in a dill pickle, battered, fried, and served with peanut butter sauce. Entree-priced, so eligibility is uncertain, but it is worth the walk regardless."},
+{n:"Le Petit Cafe pastry",p:"Resorts",l:"Riviera Resort",c:"Bakery",pr:7.00,e:2,q:8,v:0,
+ note:"Better pastry work than most resort counters. Easy Skyliner stop between EPCOT and Hollywood Studios."},
+{n:"Trader Sam's bar snack",p:"Resorts",l:"Polynesian Village",c:"Savory",pr:9.00,e:1,q:7,v:0,
+ note:"The food is beside the point at Trader Sam's, but if you're in there anyway, ask which items take a credit. None of the drinks do."},
+{n:"Joffrey's drink at the resorts",p:"Resorts",l:"Resort kiosks",c:"Drink",pr:7.50,e:2,q:6,v:1,
+ note:"Specialty drinks qualify. The plain drip coffee at the same cart does not clear the line."},
+
+{n:"Steak Frites",p:"Disney Springs",l:"The Daily Poutine, Marketplace",c:"Savory",pr:12.00,e:1,q:9,v:0,
+ note:"Fries under flank steak, chimichurri, bearnaise, and parmesan. Named one of the best snacks of 2026 and closer to a lunch than a snack, which puts eligibility in question."},
+{n:"Erin McKenna's cupcake",p:"Disney Springs",l:"Marketplace",c:"Sweet",pr:7.00,e:1,q:7,v:1,
+ note:"An entirely vegan and gluten-free bakery, which makes it the single most useful stop on property for strict plant-based eaters. Third-party, so confirm it takes credits."},
+{n:"Salt & Straw scoop",p:"Disney Springs",l:"Town Center",c:"Frozen",pr:8.00,e:1,q:9,v:0,
+ note:"Portland transplant with unusual seasonal flavors and long lines. Third-party operator, so verify before you plan a credit around it."},
+{n:"Amorette's petit cake",p:"Disney Springs",l:"Town Center",c:"Sweet",pr:9.00,e:1,q:8,v:0,
+ note:"The small mirror-glazed cakes sometimes qualify where the full dome cakes never do. Ask which size is on the plan."},
+{n:"Sunshine Churros",p:"Disney Springs",l:"Marketplace",c:"Sweet",pr:7.00,e:2,q:7,v:1,
+ note:"Standard churro cart, standard result. Fine credit, nothing more."},
+
+/* ===== TRAPS ===== */
+{n:"Any alcoholic beverage",p:"Anywhere",l:"Everywhere",c:"Drink",pr:0,e:0,q:0,v:0,
+ note:"Never redeemable with a snack credit anywhere on property. Beer, wine, cider, sangria, and cocktails can only be swapped onto a quick service or table service meal credit at 21+."},
+{n:"Souvenir cups, mugs, and buckets",p:"Anywhere",l:"Everywhere",c:"Drink",pr:0,e:0,q:0,v:0,
+ note:"The drink inside may be eligible, the souvenir vessel never is. This catches people at Pongu Pongu and at every popcorn cart."},
+{n:"Turkey leg",p:"Anywhere",l:"Carts in all four parks",c:"Savory",pr:15.00,e:0,q:6,v:0,
+ note:"Looks like the ultimate snack credit and is classified as an entree at most locations. Do not plan around it."},
+{n:"Bottled water",p:"Anywhere",l:"Everywhere",c:"Drink",pr:4.00,e:2,q:5,v:1,
+ note:"Eligible and a $2.50 loss every time. Ask any counter for free ice water instead, which they are required to provide."},
+{n:"Whole fresh fruit",p:"Anywhere",l:"Fruit stands",c:"Sweet",pr:3.00,e:2,q:6,v:1,
+ note:"The worst dollar conversion of any eligible item. Eat the fruit, pay the three dollars."},
+{n:"Brewed coffee or fountain soda",p:"Anywhere",l:"Everywhere",c:"Drink",pr:4.25,e:2,q:5,v:1,
+ note:"Eligible and always a loss. Upgrade to a specialty drink at the same counter and the same credit suddenly works."},
+{n:"Festival alcohol flights",p:"EPCOT",l:"World Showcase kiosks",c:"Drink",pr:0,e:0,q:0,v:0,
+ note:"Every food item at the booths qualifies and none of the beer, wine, or cocktail flights do. This is the most common festival mistake."},
+{n:"Club Cool samples",p:"EPCOT",l:"World Celebration",c:"Drink",pr:0,e:0,q:0,v:0,
+ note:"Free, unlimited, and air conditioned. Never spend a credit here. Beverly is the one that tastes like punishment."},
+{n:"Summer House bottomless truffle fries",p:"Disney Springs",l:"Town Center",c:"Savory",pr:0,e:0,q:0,v:0,
+ note:"Bottomless truffle fries for about $10 during Martini Hour, weekdays 3pm to 6pm. One of the best cash deals on property and not a snack credit item."},
+{n:"Festival funnel cakes and ice cream toppers",p:"EPCOT",l:"World Showcase kiosks",c:"Sweet",pr:0,e:0,q:0,v:0,
+ note:"Most festival-exclusive funnel cakes and ice cream-topped items are specifically excluded, unlike the year-round funnel cake carts."}
+];
+
+const PARKS = ["Magic Kingdom","EPCOT","Hollywood Studios","Animal Kingdom","Disney Springs","Resorts","Anywhere"];
+const CATS = ["Sweet","Savory","Frozen","Drink","Bakery"];
+
+let nights = 5;
+let basket = {};
+let fParks = new Set(), fCats = new Set();
+let vegOnly = false, winOnly = false, showTraps = false;
+let query = "";
+
+const $ = function(id){ return document.getElementById(id); };
+const esc = function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); };
+const money = function(n){ return (n < 0 ? "-$" : "$") + Math.abs(n).toFixed(2); };
+const byName = function(n){ return S.filter(function(x){ return x.n === n; })[0]; };
+const used = function(){
+  return Object.keys(basket).reduce(function(a,k){ return a + basket[k]; }, 0);
+};
+const captured = function(){
+  return Object.keys(basket).reduce(function(a,k){
+    const it = byName(k);
+    return a + (it ? it.pr * basket[k] : 0);
+  }, 0);
+};
+
+async function load(){
+  try{
+    const r = await window.storage.get("snack-basket");
+    if(r && r.value){
+      const o = JSON.parse(r.value);
+      nights = o.nights || 5;
+      basket = o.basket || {};
+    }
+  }catch(e){}
+  render();
+}
+async function persist(){
+  try{ await window.storage.set("snack-basket", JSON.stringify({nights: nights, basket: basket})); }catch(e){}
+}
+
+function matches(d){
+  if(!showTraps && d.e === 0) return false;
+  if(showTraps && d.e === 2 && d.pr >= BREAKEVEN) return false;
+  if(fParks.size && !fParks.has(d.p)) return false;
+  if(fCats.size && !fCats.has(d.c)) return false;
+  if(vegOnly && d.v !== 1) return false;
+  if(winOnly && !(d.e > 0 && d.pr >= BREAKEVEN)) return false;
+  if(query){
+    const hay = (d.n + " " + d.p + " " + d.l + " " + d.c).toLowerCase();
+    if(hay.indexOf(query) === -1) return false;
+  }
+  return true;
+}
+
+function chipRow(hostId, items, set){
+  const host = $(hostId);
+  host.innerHTML = "";
+  items.forEach(function(v){
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = v;
+    b.setAttribute("aria-pressed", set.has(v));
+    b.onclick = function(){
+      if(set.has(v)) set.delete(v); else set.add(v);
+      buildChips(); render();
+    };
+    host.appendChild(b);
+  });
+}
+function buildChips(){
+  chipRow("parkChips", PARKS, fParks);
+  chipRow("catChips", CATS, fCats);
+}
+
+function renderMeter(){
+  const u = used(), cap = captured();
+  const delta = cap - (u * BREAKEVEN);
+  $("nightsN").textContent = nights;
+  $("tUsed").textContent = u + " / " + nights;
+  $("tValue").textContent = money(cap);
+  const dEl = $("tDelta");
+  dEl.textContent = (delta > 0 ? "+" : "") + money(delta);
+  dEl.className = "t-val " + (u === 0 ? "" : (delta >= 0 ? "good" : "bad"));
+
+  const coins = $("coins");
+  coins.innerHTML = "";
+  const total = Math.max(nights, u);
+  for(let i = 0; i < total; i++){
+    const c = document.createElement("span");
+    c.className = "coin" + (i < u ? (i < nights ? " used" : " over") : "");
+    coins.appendChild(c);
+  }
+}
+
+function renderBasket(){
+  const box = $("basket");
+  const keys = Object.keys(basket);
+  if(!keys.length){
+    box.className = "basket empty";
+    box.textContent = "Your basket is empty";
+    return;
+  }
+  box.className = "basket";
+  const rows = keys.map(function(k){ return byName(k); })
+    .filter(Boolean)
+    .sort(function(a,b){ return b.pr - a.pr; });
+  const parts = rows.map(function(it){
+    return '<div class="b-row">' +
+      '<span class="b-qty">' + basket[it.n] + 'x</span>' +
+      '<span class="b-name">' + esc(it.n) + '<span class="b-where">' + esc(it.l) + '</span></span>' +
+      '<span class="b-price">' + money(it.pr * basket[it.n]) + '</span>' +
+      '<button class="b-x" data-drop="' + esc(it.n) + '" aria-label="Remove one ' + esc(it.n) + '">&times;</button>' +
+      '</div>';
+  });
+  box.innerHTML = parts.join("");
+  Array.prototype.forEach.call(box.querySelectorAll("[data-drop]"), function(b){
+    b.onclick = function(){
+      const k = b.getAttribute("data-drop");
+      basket[k] -= 1;
+      if(basket[k] <= 0) delete basket[k];
+      persist(); render();
+    };
+  });
+}
+
+function renderList(){
+  const rows = S.filter(matches).sort(function(a,b){
+    if(a.e === 0 && b.e !== 0) return 1;
+    if(b.e === 0 && a.e !== 0) return -1;
+    return b.pr - a.pr || a.n.localeCompare(b.n);
+  });
+  $("shown").textContent = rows.length;
+  $("empty").hidden = rows.length > 0;
+  const list = $("list");
+  list.innerHTML = "";
+  const u = used();
+
+  rows.forEach(function(d){
+    const li = document.createElement("li");
+    const qty = basket[d.n] || 0;
+    const isTrap = d.e === 0;
+    li.className = "item" + (qty ? " picked" : "") + (isTrap ? " trap" : "");
+
+    let priceCls = "lose";
+    if(d.pr >= 7.5) priceCls = "win";
+    else if(d.pr >= BREAKEVEN) priceCls = "meh";
+
+    const p = [];
+    p.push('<div class="i-main">');
+    p.push('<p class="i-name">' + esc(d.n) + '</p>');
+    p.push('<p class="i-where">' + esc(d.p) + ' &middot; ' + esc(d.l) + '</p>');
+    p.push('<div class="i-meta">');
+    if(isTrap){
+      p.push('<span class="badge no">NOT A SNACK CREDIT</span>');
+    }else{
+      p.push('<span class="price ' + priceCls + '">' + money(d.pr) + '</span>');
+      p.push('<span class="badge">' + (d.pr >= BREAKEVEN ? "+" : "") + money(d.pr - BREAKEVEN) + ' vs credit</span>');
+    }
+    p.push('<span class="badge">' + esc(d.c) + '</span>');
+    if(d.e === 1) p.push('<span class="badge chk">CHECK THE BOARD</span>');
+    if(d.v === 1) p.push('<span class="badge veg">PLANT-BASED</span>');
+    p.push('</div>');
+    p.push('<p class="i-note">' + esc(d.note) + '</p>');
+    p.push('</div>');
+    if(!isTrap){
+      p.push('<button class="add' + (qty ? " on" : "") + '" data-add="' + esc(d.n) + '" aria-label="Add ' + esc(d.n) + ' to basket">' + (qty ? qty + "x" : "+") + '</button>');
+    }
+    li.innerHTML = p.join("");
+    list.appendChild(li);
+  });
+
+  Array.prototype.forEach.call(list.querySelectorAll("[data-add]"), function(b){
+    b.onclick = function(){
+      const k = b.getAttribute("data-add");
+      basket[k] = (basket[k] || 0) + 1;
+      persist(); render();
+    };
+  });
+}
+
+function render(){ renderMeter(); renderBasket(); renderList(); }
+
+function autoFill(){
+  /* prefer confirmed-eligible items; only reach for "check the board" ones
+     if the current filters leave nothing else */
+  const scoreOf = function(d){ return d.pr + d.q * 0.15 + (d.e === 2 ? 6 : 0); };
+  const pool = S.filter(function(d){ return d.e > 0 && d.pr >= BREAKEVEN && matches(d); })
+    .sort(function(a,b){ return scoreOf(b) - scoreOf(a); });
+  if(!pool.length) return;
+  let slot = 0;
+  while(used() < nights && slot < pool.length * 3){
+    const it = pool[slot % pool.length];
+    if((basket[it.n] || 0) < 3) basket[it.n] = (basket[it.n] || 0) + 1;
+    slot++;
+  }
+  persist(); render();
+}
+
+$("plus").onclick = function(){ if(nights < 14){ nights++; persist(); render(); } };
+$("minus").onclick = function(){ if(nights > 1){ nights--; persist(); render(); } };
+$("autoBtn").onclick = autoFill;
+$("clearBtn").onclick = function(){ basket = {}; persist(); render(); };
+$("q").oninput = function(e){ query = e.target.value.trim().toLowerCase(); render(); };
+$("vegChip").onclick = function(e){
+  vegOnly = !vegOnly; e.currentTarget.setAttribute("aria-pressed", vegOnly); render();
+};
+$("winChip").onclick = function(e){
+  winOnly = !winOnly; e.currentTarget.setAttribute("aria-pressed", winOnly); render();
+};
+$("trapChip").onclick = function(e){
+  showTraps = !showTraps; e.currentTarget.setAttribute("aria-pressed", showTraps); render();
+};
+
+buildChips();
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Break-Even &middot; WDW Dining</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23241535%27/%3E%3Ccircle cx=%2716%27 cy=%2717%27 r=%277%27 fill=%27%23F2B544%27/%3E%3Ccircle cx=%278%27 cy=%279%27 r=%274%27 fill=%27%233FD0C9%27/%3E%3Ccircle cx=%2724%27 cy=%279%27 r=%274%27 fill=%27%23FF7A5A%27/%3E%3C/svg%3E">
+<meta name="theme-color" content="#241535">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=DM+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241535; --panel:#31204A; --panel-2:#3B2758; --line:#4B3369;
+    --cyan:#3FD0C9; --coral:#FF7A5A; --gold:#F2B544; --cream:#F6EFE4; --muted:#A28CC0;
+    --dead:#6B5486;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--ink);color:var(--cream);font-family:"Public Sans",system-ui,sans-serif;
+    font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 64px}
+
+  header{border-bottom:2px solid var(--line);padding-bottom:18px;margin-bottom:20px}
+  .eyebrow{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--cyan);margin:0 0 10px}
+  h1{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 118,"wght" 800;
+    font-size:clamp(30px,8.5vw,46px);line-height:.95;letter-spacing:-.02em;
+    text-transform:uppercase;margin:0 0 12px}
+  h1 em{font-style:normal;color:var(--gold)}
+  .lede{color:var(--muted);font-size:14px;max-width:56ch;margin:0}
+  .lede b{color:var(--cream);font-weight:600}
+
+  .controls{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:16px;margin-bottom:14px}
+  .ctl-title{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 14px}
+
+  .cost-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:7px}
+  .cost-label{font-size:13px;font-weight:600}
+  .cost-val{font-family:"DM Mono",monospace;font-size:12px;color:var(--cream)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;cursor:pointer}
+  input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--line);border-radius:2px}
+  input[type=range]::-moz-range-track{height:3px;background:var(--line);border-radius:2px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+    background:var(--cream);border:4px solid var(--ink);margin-top:-9px}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--cream);border:4px solid var(--ink)}
+  input[type=range]:focus-visible::-webkit-slider-thumb{outline:2px solid var(--cyan);outline-offset:2px}
+
+  .breakeven{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);
+    font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:10px}
+  .breakeven b{color:var(--gold);font-weight:500}
+
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+  .chips.sub{border-top:none;padding-top:0;margin-top:8px}
+  .chip{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.04em;background:transparent;
+    color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 11px;cursor:pointer}
+  .chip:hover{color:var(--cream);border-color:var(--muted)}
+  .chip[aria-pressed=true]{background:var(--cream);color:var(--ink);border-color:var(--cream);font-weight:500}
+  .chip.pour[aria-pressed=true]{background:var(--coral);border-color:var(--coral);color:var(--ink)}
+  .chip.veg[aria-pressed=true]{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+  .chip.verify[aria-pressed=true]{background:var(--cyan);border-color:var(--cyan);color:var(--ink)}
+  .chip:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+  .verdict{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
+    padding:13px 15px;margin-bottom:18px;font-size:13.5px;line-height:1.5}
+  .verdict b{color:var(--gold)}
+  .verdict .num{font-family:"DM Mono",monospace}
+
+  ol{list-style:none;margin:0;padding:0}
+  .row{border:1px solid var(--line);border-radius:10px;background:var(--panel);
+    margin-bottom:8px;overflow:hidden;transition:border-color .18s,background .18s,opacity .18s}
+  .row.under{opacity:.62}
+  .row.planned{border-color:var(--gold);background:var(--panel-2);opacity:1}
+  .row-top{display:flex;align-items:flex-start;gap:12px;padding:13px 14px}
+  .rank{font-family:"DM Mono",monospace;font-size:12px;color:var(--muted);
+    width:22px;flex:none;padding-top:3px;text-align:right}
+  .row.planned .rank{color:var(--gold)}
+  .main{flex:1;min-width:0}
+  .name{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 108,"wght" 700;
+    font-size:16px;line-height:1.2;letter-spacing:-.01em;margin:0 0 3px}
+  .dot{color:var(--cyan);font-size:10px;vertical-align:middle;margin-left:5px}
+  .where{font-family:"DM Mono",monospace;font-size:11px;color:var(--muted);margin:0 0 9px}
+
+  /* the break-even track is the signature element */
+  .track{position:relative;height:9px;border-radius:3px;background:#1B0F2A;margin-bottom:8px;overflow:visible}
+  .fill{display:flex;height:100%;border-radius:3px;overflow:hidden}
+  .seg{height:100%;transition:width .28s ease}
+  .seg.food{background:var(--cyan)}
+  .seg.drink{background:var(--coral)}
+  .row.under .seg.food{background:var(--dead)}
+  .row.under .seg.drink{background:#7E5F72}
+  .mark{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--gold);
+    transition:left .28s ease;pointer-events:none}
+  .mark::after{content:"";position:absolute;top:-3px;left:-2px;width:6px;height:6px;
+    border-radius:50%;background:var(--gold)}
+
+  .meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-family:"DM Mono",monospace;font-size:11px}
+  .total{color:var(--cream);font-weight:500;font-size:12px}
+  .delta{font-weight:500}
+  .delta.up{color:var(--cyan)}
+  .delta.down{color:var(--coral)}
+  .badge{border:1px solid;border-radius:3px;padding:1px 6px;font-size:10px;letter-spacing:.05em}
+  .b-alc{color:var(--coral);border-color:rgba(255,122,90,.45)}
+  .b-veg{color:var(--gold);border-color:rgba(242,181,68,.45)}
+  .b-none{color:var(--muted);border-color:var(--line)}
+
+  .side{display:flex;flex-direction:column;gap:6px;flex:none}
+  .plan-btn,.more-btn{width:34px;height:32px;border-radius:6px;border:1px solid var(--line);
+    background:transparent;color:var(--muted);cursor:pointer;font-size:15px;line-height:1;
+    display:flex;align-items:center;justify-content:center}
+  .plan-btn:hover,.more-btn:hover{color:var(--cream);border-color:var(--muted)}
+  .plan-btn[aria-pressed=true]{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+  .plan-btn:focus-visible,.more-btn:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+  .detail{display:none;padding:12px 14px 14px 48px;border-top:1px solid var(--line);margin-top:2px}
+  .detail.open{display:block}
+  .dt{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 3px}
+  .dt.max{color:var(--cyan)}
+  .dt.pour{color:var(--coral)}
+  .dt.note{color:var(--muted)}
+  .dd{margin:0 0 12px;font-size:14px}
+  .dd:last-child{margin-bottom:0}
+  .dd.dim{color:var(--muted);font-size:13px}
+
+  .empty{text-align:center;color:var(--muted);font-family:"DM Mono",monospace;font-size:12px;
+    padding:36px 16px;border:1px dashed var(--line);border-radius:10px}
+
+  footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--muted);line-height:1.6}
+  footer b{color:var(--cream);font-weight:600}
+  footer p{margin:0 0 10px}
+  footer p:last-child{margin-bottom:0}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:420px){.detail{padding-left:14px}}
+
+  /* ---- site navigation ---- */
+  .sitenav{position:sticky;top:0;z-index:60;background:rgba(36,21,53,.95);
+    -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+    border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:820px;margin:0 auto;padding:0 14px;display:flex;
+    align-items:center;gap:12px;height:46px}
+  .nav-home{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 118,"wght" 800;
+    font-size:13px;letter-spacing:.01em;text-transform:uppercase;color:var(--cream);
+    text-decoration:none;flex:none}
+  .nav-home span{color:var(--gold)}
+  .nav-home:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px}
+  .nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.07em;
+    text-transform:uppercase;color:var(--muted);text-decoration:none;padding:6px 10px;
+    border-radius:999px;white-space:nowrap}
+  .nav-links a:hover{color:var(--cream)}
+  .nav-links a[aria-current=page]{background:var(--cream);color:var(--ink);font-weight:500}
+  .nav-links a:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+</style>
+</head>
+<body>
+<nav class="sitenav">
+  <div class="nav-inner">
+    <a class="nav-home" href="index.html">WDW<span>Dining</span></a>
+    <div class="nav-links">
+        <a href="atlas.html">Atlas</a>
+        <a href="value.html" aria-current="page">Value</a>
+        <a href="quick-service.html">Quick Service</a>
+        <a href="snacks.html">Snacks</a>
+    </div>
+  </div>
+</nav>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Walt Disney World / Quick-Service Dining Plan / 2026</p>
+  <h1>Beat the <em>break-even</em></h1>
+  <p class="lede">Pure value math. Every counter scored as <b>the priciest entree plus the priciest drink you can put on one credit</b>, in real dollars. The gold line is what a meal has to be worth for the plan to pay for itself. Everything left of it is losing you money.</p>
+</header>
+
+<div class="controls">
+  <p class="ctl-title">Your plan</p>
+
+  <div class="cost-head">
+    <span class="cost-label">Plan cost per night, per adult</span>
+    <span class="cost-val" id="costVal">$60.47</span>
+  </div>
+  <input type="range" id="cost" min="40" max="90" step="0.5" value="60.5" aria-label="Quick-service plan cost per night">
+
+  <div class="breakeven">
+    <span>Each meal must clear</span>
+    <span><b id="beVal">$26.75</b></span>
+  </div>
+
+  <div class="chips sub" style="margin-top:14px">
+    <button class="chip pour" id="pourChip" aria-pressed="true">Counting a drink at 21+</button>
+    <button class="chip veg" id="vegChip" aria-pressed="false">Plant-based entree only</button>
+    <button class="chip verify" id="ckChip" aria-pressed="false">Verified menu detail only</button>
+  </div>
+
+  <div class="chips" id="parkChips"></div>
+</div>
+
+<div class="verdict" id="verdict"></div>
+
+<ol id="list"></ol>
+<div class="empty" id="empty" hidden>Nothing matches those filters.</div>
+
+<footer>
+  <p><b>How the number is built:</b> entree ceiling plus drink ceiling. A non-alcoholic drink is worth about $6. Beer or wine runs about $12. A specialty cocktail runs about $17. That spread is the entire reason alcohol matters to this plan, and it's why the same counter can swing $11 on a single credit depending on what you order with it.</p>
+  <p><b>Break-even:</b> the nightly cost less roughly $7 for the snack credit, split across two meals. The refillable mug is excluded since it's a one-time item that gets cheaper the longer you stay. Turn the drink off and watch how much of the list drops below the line. That's the honest answer to whether this plan is worth buying.</p>
+  <p><b>Plant-based is a filter here, not a scoring factor</b>, so the ranking is pure value. The cyan dot means I verified current menu detail. Menus and prices rotate, so confirm in My Disney Experience before committing a credit. Magic Kingdom quick service pours no alcohol anywhere.</p>
+  <p style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.55">Value build &middot; 88 locations</p>
+</footer>
+
+</div>
+
+<script>
+/* ---- storage shim -------------------------------------------------------
+   Inside the Claude artifact sandbox a window.storage API is provided.
+   On a normal web host it is not, so fall back to localStorage and keep
+   saved baskets and shortlists working. Degrades to in-memory if both
+   are unavailable (private browsing, storage disabled).                     */
+(function(){
+  if(window.storage && typeof window.storage.get === "function") return;
+  var mem = {};
+  var ok = false;
+  try{ window.localStorage.setItem("__t","1"); window.localStorage.removeItem("__t"); ok = true; }catch(e){ ok = false; }
+  var K = function(k){ return "wdw-dining:" + k; };
+  window.storage = {
+    get: function(k){
+      try{
+        var v = ok ? window.localStorage.getItem(K(k)) : (mem[k] === undefined ? null : mem[k]);
+        return Promise.resolve(v === null ? null : {key:k, value:v, shared:false});
+      }catch(e){ return Promise.resolve(null); }
+    },
+    set: function(k,v){
+      try{
+        if(ok) window.localStorage.setItem(K(k), v); else mem[k] = v;
+      }catch(e){ mem[k] = v; }
+      return Promise.resolve({key:k, value:v, shared:false});
+    },
+    delete: function(k){
+      try{ if(ok) window.localStorage.removeItem(K(k)); else delete mem[k]; }catch(e){}
+      return Promise.resolve({key:k, deleted:true, shared:false});
+    },
+    list: function(){ return Promise.resolve({keys:[], shared:false}); }
+  };
+})();
+
+/* e   = entree ceiling in dollars
+   alc = 0 none | 1 beer, wine, cooler case | 2 real bar or specialty pours
+   veg = 0 none | 1 workable | 2 a plant-based entree worth ordering
+   ck  = 1 when current menu detail was verified rather than inferred */
+const NA_DRINK = 6, BEER_WINE = 12, COCKTAIL = 17, SNACK = 7;
+
+const DATA = [
+/* --- DISNEY SPRINGS --- */
+{n:"The Polite Pig",p:"Disney Springs",a:"Town Center",e:21,alc:2,veg:1,ck:1,
+ max:"Half chicken or the brisket plate. Highest entree ceiling in Disney Springs.",
+ pour:"Full bourbon bar. The cocktail list is the reason this ranks first.",
+ note:"Third-party operator, so participation gets renegotiated yearly. Verify before you walk over."},
+{n:"The Smokehouse at House of Blues",p:"Disney Springs",a:"West Side",e:20,alc:2,veg:0,ck:0,
+ max:"Brisket or the combo platter.",
+ pour:"Full liquor license behind an outdoor counter, which is rare.",
+ note:"Walk-up beside the main restaurant. Live music patio, easy seating."},
+{n:"eet by Maneet Chauhan",p:"Disney Springs",a:"Marketplace",e:20,alc:1,veg:2,ck:1,
+ max:"Indian small plates run high. Bread service alone is around $19.95.",
+ pour:"Beer and wine only, which caps the ceiling.",
+ note:"Confirm participation. Third-party Springs spots opt in and out."},
+{n:"Cookes of Dublin",p:"Disney Springs",a:"The Landing",e:18,alc:2,veg:1,ck:0,
+ max:"Fish and chips or the pie of the day.",
+ pour:"Full Irish bar. Guinness pours are full price and full size.",
+ note:"Attached to Raglan Road and shares its kitchen. Portions are heavy."},
+{n:"Morimoto Asia Street Food",p:"Disney Springs",a:"The Landing",e:18,alc:2,veg:1,ck:0,
+ max:"Ramen or the rice bowls.",
+ pour:"Cocktails from the adjoining bar.",
+ note:"Outdoor window under the main restaurant. Far shorter wait than the dining room."},
+{n:"D-Luxe Burger",p:"Disney Springs",a:"Town Center",e:17,alc:2,veg:1,ck:0,
+ max:"Signature burger. Modest entree ceiling.",
+ pour:"Spiked gelato shakes are what push this over the line.",
+ note:"Widely rated the best burger on property. Order at the kiosks."},
+{n:"Pepe by Jose Andres",p:"Disney Springs",a:"West Side",e:17,alc:2,veg:1,ck:0,
+ max:"Spanish sandwiches. Small menu, strong pricing.",
+ pour:"Sangria and wine.",
+ note:"Regularly recommended by dining-plan regulars and easy to walk right past."},
+{n:"Blaze Fast-Fire'd Pizza",p:"Disney Springs",a:"Town Center",e:15,alc:1,veg:2,ck:0,
+ max:"Build-your-own loaded with every topping.",
+ pour:"Beer and wine.",
+ note:"Cheap out of pocket, which makes it a better cash stop than credit stop."},
+{n:"Pizza Ponte",p:"Disney Springs",a:"The Landing",e:15,alc:1,veg:1,ck:0,
+ max:"The oversized slices.",
+ pour:"Beer and wine.",
+ note:"Counter service from the Enzo's group. Better than it looks from outside."},
+{n:"B.B. Wolf's Sausage Co.",p:"Disney Springs",a:"Marketplace",e:15,alc:1,veg:1,ck:0,
+ max:"Loaded sausage.",
+ pour:"Beer.",
+ note:"Walk-up window with limited seating."},
+{n:"Chicken Guy!",p:"Disney Springs",a:"Marketplace",e:15,alc:1,veg:0,ck:0,
+ max:"Tenders with the sauce flight.",
+ pour:"Beer and wine.",
+ note:"Better as a cash stop. Save the credit."},
+{n:"The Daily Poutine",p:"Disney Springs",a:"Marketplace",e:13,alc:1,veg:1,ck:0,
+ max:"One poutine is not entree-scale.",
+ pour:"Beer.",
+ note:"A snack stop wearing a quick-service badge. Pay cash."},
+{n:"Everglazed Donuts & Cold Brew",p:"Disney Springs",a:"West Side",e:12,alc:1,veg:1,ck:0,
+ max:"Donuts. Not a meal.",
+ pour:"Spiked cold brew is the only value here.",
+ note:"Treat this as a snack credit."},
+{n:"Earl of Sandwich",p:"Disney Springs",a:"Marketplace",e:12,alc:0,veg:1,ck:0,
+ max:"Cheapest sandwiches in the district.",
+ pour:"No alcohol.",
+ note:"Great value with cash, worst credit conversion in Disney Springs. That inversion catches people."},
+{n:"Amorette's Patisserie",p:"Disney Springs",a:"Town Center",e:12,alc:1,veg:0,ck:0,
+ max:"Pastry pricing.",
+ pour:"Wine by the glass.",
+ note:"Use a snack credit here instead."},
+
+/* --- RESORTS --- */
+{n:"Geyser Point Bar & Grill",p:"Resorts",a:"Wilderness Lodge",e:23,alc:2,veg:2,ck:1,
+ max:"The plant-based Vegetable Burger alone runs about $23. That is bar pricing on a quick-service credit and the highest verified entree ceiling on the list.",
+ pour:"Full lounge bar. Cocktails clear $15 easily.",
+ note:"The To Go window takes credits. Lounge seating next door runs on a walk-up list, often with no wait."},
+{n:"Trail's End Restaurant",p:"Resorts",a:"Fort Wilderness",e:19,alc:1,veg:1,ck:1,
+ max:"The skillets and platters. Fried chicken and BBQ ribs are the ones to get.",
+ pour:"Beer and wine.",
+ note:"Full-size pizzas and family meals are excluded from the plan."},
+{n:"Resort Food Courts",p:"Resorts",a:"Value & Moderate resorts",e:19,alc:1,veg:2,ck:1,
+ max:"The unposted rotating specialty offerings: pot roast, half chicken, grilled salmon, braised beef, shrimp and grits. Usually three or four clear $18.",
+ pour:"Cooler case of beer, wine, and canned cocktails.",
+ note:"Riverside Mill, El Mercado de Coronado, Landscape of Flavors, Everything POP, Sassagoula Floatworks, Centertown Market, and the three All-Star courts."},
+{n:"Bar Riva",p:"Resorts",a:"Riviera Resort",e:18,alc:2,veg:1,ck:0,
+ max:"Poolside bar pricing on the food as well as the drinks.",
+ pour:"Full bar. This is the whole reason it ranks.",
+ note:"Easy Skyliner hop from EPCOT or Hollywood Studios. Underused by anyone not staying there."},
+{n:"Primo Piatto",p:"Resorts",a:"Riviera Resort",e:18,alc:2,veg:1,ck:0,
+ max:"Italian entrees with real portions. Among the best quick-service kitchens on property.",
+ pour:"Wine and cocktails.",
+ note:"Worth a dedicated Skyliner trip. Breakfast here is also well above average."},
+{n:"Gasparilla Island Grill",p:"Resorts",a:"Grand Floridian",e:18,alc:2,veg:1,ck:0,
+ max:"Flatbreads and entree platters at deluxe-resort pricing.",
+ pour:"Full bar attached.",
+ note:"Open extremely late, sometimes around the clock. Best post-fireworks credit on the monorail loop."},
+{n:"Roaring Fork",p:"Resorts",a:"Wilderness Lodge",e:18,alc:1,veg:1,ck:1,
+ max:"Barbecued brisket and burnt ends with potato hash, fiery slaw, and cornbread.",
+ pour:"Beer and wine cooler case.",
+ note:"Take the boat over from Magic Kingdom and make it a midday reset."},
+{n:"The Sand Bar",p:"Resorts",a:"Contemporary",e:16,alc:2,veg:1,ck:0,
+ max:"Small poolside menu with high per-item cost.",
+ pour:"Full pool bar.",
+ note:"You need pool access to be comfortable there, but the credit works."},
+{n:"Hurricane Hanna's",p:"Resorts",a:"Beach Club",e:16,alc:2,veg:1,ck:0,
+ max:"Sandwiches and grill items at pool pricing.",
+ pour:"Full pool bar.",
+ note:"Stormalong Bay is guests-only, but the counter itself is reachable."},
+{n:"Capt. Cook's",p:"Resorts",a:"Polynesian Village",e:16,alc:2,veg:1,ck:0,
+ max:"Hot entrees and bowls.",
+ pour:"Proper tropical drinks. Polynesian pours are not cheap, which works in your favor.",
+ note:"Tonga Toast at breakfast is the draw, but breakfast is still a poor credit conversion."},
+{n:"BoardWalk Deli",p:"Resorts",a:"BoardWalk Inn",e:16,alc:2,veg:1,ck:0,
+ max:"Oversized deli sandwiches.",
+ pour:"Beer, wine, and cocktails.",
+ note:"Walkable from EPCOT's International Gateway and from Hollywood Studios. Strong lunch escape."},
+{n:"Contempo Cafe",p:"Resorts",a:"Contemporary",e:16,alc:2,veg:1,ck:0,
+ max:"Flatbreads and hot entrees.",
+ pour:"Cooler case of wine, beer, and canned cocktails.",
+ note:"One monorail stop from Magic Kingdom and the fastest way out of that park's no-alcohol zone."},
+{n:"The Artist's Palette",p:"Resorts",a:"Saratoga Springs",e:16,alc:1,veg:1,ck:0,
+ max:"Rotating hot entrees.",
+ pour:"Beer and wine.",
+ note:"Short boat ride from Disney Springs, easy to add to a Springs evening."},
+{n:"The Paddock Grill",p:"Resorts",a:"Saratoga Springs",e:15,alc:2,veg:1,ck:0,
+ max:"Pool grill menu.",
+ pour:"Bar adjacent.",
+ note:"Quiet resort, almost never a line."},
+{n:"The Mara",p:"Resorts",a:"Animal Kingdom Lodge",e:15,alc:1,veg:1,ck:0,
+ max:"African-inspired entrees. Better food than a typical resort counter.",
+ pour:"Beer and wine.",
+ note:"Worth the trip for the savanna views. Boma and Jiko are upstairs for table service."},
+{n:"Good's Food to Go",p:"Resorts",a:"Old Key West",e:14,alc:1,veg:1,ck:0,
+ max:"Sandwiches and burgers. Modest ceiling.",
+ pour:"Beer.",
+ note:"Small poolside window. Convenient only if you're already there."},
+{n:"The Market at Ale & Compass",p:"Resorts",a:"Yacht Club",e:14,alc:1,veg:1,ck:0,
+ max:"Grab-and-go. Low ceiling for a deluxe resort.",
+ pour:"Beer and wine.",
+ note:"Fine for a fast breakfast, weak for burning a lunch credit."},
+{n:"Beach Club Marketplace",p:"Resorts",a:"Beach Club",e:14,alc:1,veg:1,ck:0,
+ max:"Sandwiches and salads.",
+ pour:"Beer and wine.",
+ note:"Steps from EPCOT's International Gateway."},
+{n:"Cafe Rix",p:"Resorts",a:"Coronado Springs",e:13,alc:1,veg:1,ck:0,
+ max:"Grab-and-go pricing. El Mercado downstairs is the better credit here.",
+ pour:"Beer and wine.",
+ note:"Coronado Springs is under a long construction project. Check what's open."},
+{n:"Meadow Snack Bar",p:"Resorts",a:"Fort Wilderness",e:13,alc:1,veg:1,ck:0,
+ max:"Poolside burgers and sandwiches.",
+ pour:"Beer.",
+ note:"Seasonal hours. Trail's End is the better Fort Wilderness credit."},
+{n:"Pizza Window",p:"Resorts",a:"BoardWalk Inn",e:13,alc:1,veg:1,ck:0,
+ max:"Whole pies and slices.",
+ pour:"Beer and wine.",
+ note:"Late-night option on the BoardWalk promenade."},
+{n:"Blue Ribbon Corn Dogs",p:"Resorts",a:"BoardWalk Inn",e:11,alc:1,veg:0,ck:0,
+ max:"One corn dog is not a meal credit.",
+ pour:"Beer.",
+ note:"Snack stand. Pay cash."},
+{n:"Carousel Coffee",p:"Resorts",a:"BoardWalk Inn",e:10,alc:1,veg:1,ck:0,
+ max:"Coffee and pastry pricing.",
+ pour:"Spiked coffee drinks are the only reason this scores at all.",
+ note:"Snack credit."},
+
+/* --- HOLLYWOOD STUDIOS --- */
+{n:"Docking Bay 7 Food & Cargo",p:"Hollywood Studios",a:"Galaxy's Edge",e:19,alc:2,veg:2,ck:1,
+ max:"Ribs, the Batuuan Beef & Crispy Topato Stir-fry, or the Peka Tuna Poke.",
+ pour:"Specialty Galaxy's Edge cocktails.",
+ note:"Mobile order, the land gets slammed. Yuca fries only after 3pm."},
+{n:"Sunset Ranch Market",p:"Hollywood Studios",a:"Sunset Boulevard",e:17,alc:1,veg:1,ck:1,
+ max:"Fairfax Fare is the value window: mashed potato waffle bowls with brisket or pork belly.",
+ pour:"Beer and wine.",
+ note:"Outdoor food court by Tower of Terror. Three ordering bays, one shared seating area."},
+{n:"ABC Commissary",p:"Hollywood Studios",a:"Commissary Lane",e:16,alc:2,veg:2,ck:1,
+ max:"Whichever platter is priciest that season.",
+ pour:"Margaritas and cocktails.",
+ note:"Reliable, air conditioned, rarely a wait. Underrated."},
+{n:"Backlot Express",p:"Hollywood Studios",a:"Echo Lake",e:15,alc:1,veg:2,ck:1,
+ max:"Middling entree ceiling, so the drink has to close the gap.",
+ pour:"Beer and wine.",
+ note:"Lots of seating, indoor and out. You'll always find a table."},
+{n:"Dockside Diner",p:"Hollywood Studios",a:"Echo Lake",e:14,alc:2,veg:1,ck:0,
+ max:"Small menu, low entree ceiling.",
+ pour:"Specialty cocktails carry the whole value here.",
+ note:"Walk-up window on the lake with very little shade."},
+{n:"Ronto Roasters",p:"Hollywood Studios",a:"Galaxy's Edge",e:14,alc:2,veg:2,ck:1,
+ max:"Wraps only. Pay cash here and save the credit for Docking Bay.",
+ pour:"Bad Motivator IPA and specialty pours.",
+ note:"Closes around 3pm. Docking Bay serves the standard Ronto Wrap after that."},
+{n:"Woody's Lunch Box",p:"Hollywood Studios",a:"Toy Story Land",e:12,alc:1,veg:2,ck:1,
+ max:"Low ceiling. This is a cash stop, not a credit stop.",
+ pour:"Beer and hard cider.",
+ note:"Walk-up window with almost no shade or seating."},
+{n:"The Trolley Car Cafe",p:"Hollywood Studios",a:"Hollywood Boulevard",e:11,alc:0,veg:1,ck:0,
+ max:"Starbucks pricing. The worst meal credit in the park.",
+ pour:"No alcohol.",
+ note:"Use a snack credit here, never a meal credit."},
+
+/* --- ANIMAL KINGDOM --- */
+{n:"Flame Tree Barbecue",p:"Animal Kingdom",a:"Discovery Island",e:20,alc:1,veg:2,ck:1,
+ max:"Multi-meat sampler for pure value, St. Louis ribs if you actually want to enjoy it.",
+ pour:"Beer and wine.",
+ note:"Best outdoor quick-service seating on property, by the water facing Everest."},
+{n:"Satu'li Canteen",p:"Animal Kingdom",a:"Pandora",e:19,alc:1,veg:2,ck:1,
+ max:"Combination Bowl or the Ocean Moon Bowl with tuna and blue noodles.",
+ pour:"Hawkes' Grog Ale and a small beer list. No cocktails, which caps it.",
+ note:"Breakfast here is the rare exception to 'never burn a credit on breakfast'."},
+{n:"Harambe Market",p:"Animal Kingdom",a:"Africa",e:16,alc:1,veg:1,ck:0,
+ max:"Skewers and the ribs platter.",
+ pour:"Beer.",
+ note:"Shaded courtyard seating most people walk past on the way to the safari."},
+{n:"Yak & Yeti Local Food Cafes",p:"Animal Kingdom",a:"Asia",e:16,alc:1,veg:1,ck:0,
+ max:"The rice bowls and the honey chicken.",
+ pour:"Beer.",
+ note:"Outdoor counter attached to the full restaurant. Much faster than the dining room."},
+{n:"Pizzafari",p:"Animal Kingdom",a:"Discovery Island",e:14,alc:1,veg:1,ck:0,
+ max:"Flatbreads and pasta.",
+ pour:"Beer and wine.",
+ note:"Heavily air conditioned with a lot of seating, which matters in August."},
+{n:"Creature Comforts",p:"Animal Kingdom",a:"Discovery Island",e:11,alc:0,veg:1,ck:0,
+ max:"Starbucks pricing.",
+ pour:"No alcohol.",
+ note:"Snack credit territory."},
+
+/* --- EPCOT --- */
+{n:"Regal Eagle Smokehouse",p:"EPCOT",a:"American Adventure",e:18,alc:2,veg:2,ck:1,
+ max:"Memphis dry-rub pork ribs, one of the priciest entrees in the park, with a side and garlic toast.",
+ pour:"Craft draft list plus specialty cocktails at the outdoor bar.",
+ note:"The bar is separate from the food window. Best all-round EPCOT credit."},
+{n:"Tangierine Cafe",p:"EPCOT",a:"Morocco",e:18,alc:2,veg:2,ck:0,
+ max:"The Mediterranean platters carry high prices.",
+ pour:"Wine and specialty drinks.",
+ note:"Reopened as 'Flavors of the Medina'. Verify the current menu, it changed materially."},
+{n:"La Cantina de San Angel",p:"EPCOT",a:"Mexico",e:17,alc:2,veg:1,ck:1,
+ max:"The taco entrees beat the arroz bowl on price.",
+ pour:"Several drinks run $14 or more, which is nearly entree money on its own.",
+ note:"No mobile order. The line gets genuinely long. Waterfront seating is worth it."},
+{n:"Katsura Grill",p:"EPCOT",a:"Japan",e:16,alc:2,veg:1,ck:1,
+ max:"The Osusume recommended menu items.",
+ pour:"Sake, Kirin, and specialty pours.",
+ note:"Quiet garden seating up the hill, one of the better places to sit in World Showcase."},
+{n:"Sunshine Seasons",p:"EPCOT",a:"The Land",e:16,alc:1,veg:2,ck:0,
+ max:"Four separate stations, so scan all of them. Rotisserie and grill windows price highest.",
+ pour:"Beer and wine.",
+ note:"Downstairs from Soarin'. Easy to miss because it sits below ground level."},
+{n:"Les Halles Boulangerie-Patisserie",p:"EPCOT",a:"France",e:15,alc:2,veg:1,ck:0,
+ max:"A composed sandwich or quiche.",
+ pour:"French wine by the glass. The pour is what makes the math work.",
+ note:"Cafeteria line at the back of France. One of the better-quality counters in the park."},
+{n:"Crepes a Emporter",p:"EPCOT",a:"France",e:15,alc:2,veg:1,ck:0,
+ max:"Savory galettes.",
+ pour:"Hard cider and wine, priced like cocktails.",
+ note:"Walk-up window beside the full La Creperie. Same kitchen, far shorter wait."},
+{n:"Yorkshire County Fish Shop",p:"EPCOT",a:"United Kingdom",e:15,alc:1,veg:0,ck:0,
+ max:"Fish and chips. Simple and it clears the bar.",
+ pour:"A pint of Bass or Harp.",
+ note:"Waterfront seating, and the Rose & Crown pub next door pours the same beer."},
+{n:"Lotus Blossom Cafe",p:"EPCOT",a:"China",e:15,alc:1,veg:1,ck:0,
+ max:"The combination plates.",
+ pour:"Beer and plum wine.",
+ note:"Rarely crowded compared with the rest of World Showcase."},
+{n:"Fife & Drum Tavern",p:"EPCOT",a:"American Adventure",e:15,alc:1,veg:1,ck:0,
+ max:"Turkey leg. Priced high but it is not a composed meal.",
+ pour:"Beer and a frozen wine slush.",
+ note:"Regal Eagle is fifty feet away and far better for the same credit."},
+{n:"Connections Eatery",p:"EPCOT",a:"World Celebration",e:15,alc:1,veg:2,ck:1,
+ max:"Nothing here is a value standout. You're paying for convenience and air conditioning.",
+ pour:"Beer and wine.",
+ note:"Mobile order and go at an off hour. Both queues crawl at peak."},
+{n:"Sommerfest",p:"EPCOT",a:"Germany",e:14,alc:2,veg:2,ck:1,
+ max:"Small menu with a low entree ceiling.",
+ pour:"German beer pours are large and pricey, and they do almost all the work here.",
+ note:"The off-menu vegan bratwurst is around $12.69. Order in person, not mobile."},
+{n:"Pizza al Taglio",p:"EPCOT",a:"Italy",e:14,alc:1,veg:1,ck:0,
+ max:"Roman-style slices.",
+ pour:"Beer and wine.",
+ note:"Via Napoli's window. The separate Pizza Pickup deal costs two credits, not one."},
+{n:"Kringla Bakeri og Kafe",p:"EPCOT",a:"Norway",e:13,alc:1,veg:1,ck:0,
+ max:"Open-faced sandwiches. School bread is famous but it's a snack.",
+ pour:"Norwegian beer.",
+ note:"Better used as a snack credit than a meal credit."},
+{n:"Refreshment Outpost",p:"EPCOT",a:"World Showcase",e:12,alc:1,veg:1,ck:0,
+ max:"Hot dogs.",
+ pour:"Beer.",
+ note:"Between Germany and China. Use a snack credit."},
+{n:"Connections Cafe",p:"EPCOT",a:"World Celebration",e:11,alc:0,veg:1,ck:0,
+ max:"Starbucks pricing. Worst meal credit in EPCOT.",
+ pour:"No alcohol.",
+ note:"Snack credit only."},
+
+/* --- MAGIC KINGDOM --- */
+{n:"Columbia Harbour House",p:"Magic Kingdom",a:"Liberty Square",e:19,alc:0,veg:1,ck:1,
+ max:"Lobster roll, grilled salmon, New England seafood boil, or the shrimp skewer. Highest entree ceiling in the park by a wide margin.",
+ pour:"No alcohol. This single fact costs you about $11 a credit and drops an otherwise top-tier counter below the line.",
+ note:"Best food in Magic Kingdom quick service and the quietest upstairs seating in the park."},
+{n:"Pecos Bill Tall Tale Inn & Cafe",p:"Magic Kingdom",a:"Frontierland",e:16,alc:0,veg:1,ck:1,
+ max:"Double bacon barbecue cheeseburger or a create-your-own bowl.",
+ pour:"No alcohol.",
+ note:"Solid entree ceiling, capped hard by the park's dry counters."},
+{n:"Pinocchio Village Haus",p:"Magic Kingdom",a:"Fantasyland",e:15,alc:0,veg:2,ck:0,
+ max:"Flatbreads and pasta.",
+ pour:"No alcohol.",
+ note:"Vegan cheese pizza is a standing item. Window seats overlook the it's a small world queue."},
+{n:"Cosmic Ray's Starlight Cafe",p:"Magic Kingdom",a:"Tomorrowland",e:15,alc:0,veg:2,ck:1,
+ max:"Standard theme park pricing.",
+ pour:"No alcohol.",
+ note:"Gets mobbed. Off-peak or mobile order only."},
+{n:"Casey's Corner",p:"Magic Kingdom",a:"Main Street",e:14,alc:0,veg:2,ck:1,
+ max:"Hot dogs. There is no version of this that maximizes a credit.",
+ pour:"No alcohol.",
+ note:"Upgrade plain fries to a specialty fry at no charge on the plan. Works at several Disney-run counters."},
+{n:"The Friar's Nook",p:"Magic Kingdom",a:"Fantasyland",e:12,alc:0,veg:1,ck:0,
+ max:"Loaded tots. Not meal-scale.",
+ pour:"No alcohol.",
+ note:"Tiny window with almost no seating. Snack credit."},
+{n:"Golden Oak Outpost",p:"Magic Kingdom",a:"Frontierland",e:12,alc:0,veg:0,ck:0,
+ max:"Nuggets and fries.",
+ pour:"No alcohol.",
+ note:"Seasonal hours."},
+{n:"Sleepy Hollow Refreshments",p:"Magic Kingdom",a:"Liberty Square",e:12,alc:0,veg:1,ck:0,
+ max:"Waffle sandwiches.",
+ pour:"No alcohol.",
+ note:"Best castle view of any counter in the park. Use a snack credit and enjoy the bridge."},
+{n:"The Lunching Pad",p:"Magic Kingdom",a:"Tomorrowland",e:11,alc:0,veg:1,ck:0,
+ max:"Hot dogs and pretzels.",
+ pour:"No alcohol.",
+ note:"Under the PeopleMover. Snack credit territory."},
+{n:"Gaston's Tavern",p:"Magic Kingdom",a:"Fantasyland",e:10,alc:0,veg:1,ck:0,
+ max:"A cinnamon roll and LeFou's Brew.",
+ pour:"No alcohol. LeFou's Brew is not alcoholic despite the name.",
+ note:"Never spend a meal credit here."},
+{n:"Main Street Bakery",p:"Magic Kingdom",a:"Main Street",e:10,alc:0,veg:1,ck:0,
+ max:"Starbucks pricing. The single worst meal credit on property.",
+ pour:"No alcohol.",
+ note:"Snack credit only."},
+
+/* --- WATER PARKS --- */
+{n:"Lottawatta Lodge",p:"Water Parks",a:"Blizzard Beach",e:15,alc:1,veg:1,ck:0,
+ max:"The main counter at Blizzard Beach. Entree platters.",
+ pour:"Beer and frozen cocktails.",
+ note:"Water park days run long. A credit here beats paying cash for a soggy burger."},
+{n:"Leaning Palms",p:"Water Parks",a:"Typhoon Lagoon",e:15,alc:1,veg:1,ck:0,
+ max:"Typhoon Lagoon's main counter and the largest menu at either water park.",
+ pour:"Beer and frozen cocktails.",
+ note:"Plan around it, since the other windows are snack-scale."},
+{n:"Typhoon Tilly's",p:"Water Parks",a:"Typhoon Lagoon",e:14,alc:1,veg:1,ck:0,
+ max:"Fish baskets and wraps.",
+ pour:"Beer.",
+ note:"Smaller and usually shorter lines than Leaning Palms."},
+{n:"Avalunch",p:"Water Parks",a:"Blizzard Beach",e:13,alc:1,veg:1,ck:0,
+ max:"Hot dogs and nachos.",
+ pour:"Beer.",
+ note:"Snack-scale menu."},
+{n:"Lowtide Lou's",p:"Water Parks",a:"Typhoon Lagoon",e:13,alc:1,veg:1,ck:0,
+ max:"Sandwiches and wraps.",
+ pour:"Beer.",
+ note:"Seasonal, near the wave pool."},
+{n:"Cooling Hut",p:"Water Parks",a:"Blizzard Beach",e:11,alc:1,veg:1,ck:0,
+ max:"Snack-scale menu.",
+ pour:"Beer.",
+ note:"Use a snack credit."},
+{n:"Warming Hut",p:"Water Parks",a:"Blizzard Beach",e:11,alc:1,veg:1,ck:0,
+ max:"Snack-scale menu.",
+ pour:"Beer.",
+ note:"Seasonal hours."},
+{n:"Surf Doggies",p:"Water Parks",a:"Typhoon Lagoon",e:11,alc:1,veg:1,ck:0,
+ max:"Hot dogs.",
+ pour:"Beer.",
+ note:"Use a snack credit."},
+{n:"Snack Shack",p:"Water Parks",a:"Typhoon Lagoon",e:11,alc:1,veg:1,ck:0,
+ max:"Exactly what the name says.",
+ pour:"Beer.",
+ note:"Snack credit."}
+];
+
+const PARKS = ["Magic Kingdom","EPCOT","Hollywood Studios","Animal Kingdom","Disney Springs","Resorts","Water Parks"];
+
+let nightly = 60.5;
+let pour = true;
+let vegOnly = false;
+let ckOnly = false;
+let activeParks = new Set();
+let planned = new Set();
+let openRows = new Set();
+
+const $ = id => document.getElementById(id);
+const money = n => '$' + n.toFixed(2);
+
+function drinkCeiling(d){
+  if(!pour) return NA_DRINK;
+  if(d.alc === 2) return COCKTAIL;
+  if(d.alc === 1) return BEER_WINE;
+  return NA_DRINK;
+}
+const total = d => d.e + drinkCeiling(d);
+const breakEven = () => (nightly - SNACK) / 2;
+
+async function loadPlan(){
+  try{
+    const r = await window.storage.get('qs-value-planned');
+    if(r && r.value) planned = new Set(JSON.parse(r.value));
+  }catch(err){}
+  render();
+}
+async function savePlan(){
+  try{ await window.storage.set('qs-value-planned', JSON.stringify(Array.from(planned))); }
+  catch(err){}
+}
+
+function buildChips(){
+  const box = $('parkChips');
+  box.innerHTML = '';
+  PARKS.forEach(function(p){
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = p;
+    b.setAttribute('aria-pressed', activeParks.has(p));
+    b.onclick = function(){
+      if(activeParks.has(p)) activeParks.delete(p); else activeParks.add(p);
+      buildChips(); render();
+    };
+    box.appendChild(b);
+  });
+}
+
+function rowMarkup(d, i, be, scaleMax){
+  const dr = drinkCeiling(d);
+  const t = d.e + dr;
+  const delta = t - be;
+  const clears = delta >= 0;
+  const pct = function(x){ return (x / scaleMax * 100).toFixed(2) + '%'; };
+  const isOpen = openRows.has(d.n);
+  const isPlanned = planned.has(d.n);
+
+  const cls = ['row'];
+  if(!clears) cls.push('under');
+  if(isPlanned) cls.push('planned');
+
+  const parts = [];
+  parts.push('<div class="row-top">');
+  parts.push('<span class="rank">' + String(i + 1).padStart(2, '0') + '</span>');
+  parts.push('<div class="main">');
+  parts.push('<p class="name">' + d.n + (d.ck ? '<span class="dot" title="Menu detail verified">&#9679;</span>' : '') + '</p>');
+  parts.push('<p class="where">' + d.p + ' &middot; ' + d.a + '</p>');
+  parts.push('<div class="track">');
+  parts.push('<div class="fill">');
+  parts.push('<span class="seg food" style="width:' + pct(d.e) + '"></span>');
+  parts.push('<span class="seg drink" style="width:' + pct(dr) + '"></span>');
+  parts.push('</div>');
+  parts.push('<span class="mark" style="left:' + pct(be) + '"></span>');
+  parts.push('</div>');
+  parts.push('<div class="meta">');
+  parts.push('<span class="total">' + money(t) + '</span>');
+  parts.push('<span class="delta ' + (clears ? 'up' : 'down') + '">' + (clears ? '+' : '') + money(delta).replace('$-', '-$') + '</span>');
+  parts.push('<span class="badge b-none">food ' + money(d.e) + '</span>');
+  parts.push('<span class="badge ' + (dr > NA_DRINK ? 'b-alc' : 'b-none') + '">drink ' + money(dr) + '</span>');
+  if(d.veg === 2) parts.push('<span class="badge b-veg">PLANT-BASED</span>');
+  parts.push('</div>');
+  parts.push('</div>');
+  parts.push('<div class="side">');
+  parts.push('<button class="plan-btn" aria-pressed="' + isPlanned + '" aria-label="Plan a stop at ' + d.n + '" data-plan="' + d.n + '">&#10003;</button>');
+  parts.push('<button class="more-btn" aria-expanded="' + isOpen + '" aria-label="Details for ' + d.n + '" data-more="' + d.n + '">' + (isOpen ? '&minus;' : '+') + '</button>');
+  parts.push('</div>');
+  parts.push('</div>');
+  parts.push('<div class="detail' + (isOpen ? ' open' : '') + '">');
+  parts.push('<dl>');
+  parts.push('<dt class="dt max">Entree ceiling</dt><dd class="dd">' + d.max + '</dd>');
+  parts.push('<dt class="dt pour">Drink ceiling</dt><dd class="dd">' + d.pour + '</dd>');
+  parts.push('<dt class="dt note">Worth knowing</dt><dd class="dd dim">' + d.note + '</dd>');
+  parts.push('</dl>');
+  parts.push('</div>');
+
+  return { cls: cls.join(' '), html: parts.join('') };
+}
+
+function render(){
+  const be = breakEven();
+  $('costVal').textContent = money(nightly);
+  $('beVal').textContent = money(be);
+
+  const rows = DATA
+    .filter(function(d){ return activeParks.size === 0 || activeParks.has(d.p); })
+    .filter(function(d){ return !vegOnly || d.veg === 2; })
+    .filter(function(d){ return !ckOnly || d.ck; })
+    .map(function(d){ return Object.assign({}, d, { t: total(d) }); })
+    .sort(function(a, b){ return b.t - a.t || a.n.localeCompare(b.n); });
+
+  $('empty').hidden = rows.length > 0;
+
+  const scaleMax = Math.max(be, rows.length ? rows[0].t : 1) * 1.06;
+  const clearing = rows.filter(function(d){ return d.t >= be; }).length;
+
+  const allRows = DATA.map(total);
+  const bestPossible = Math.max.apply(null, allRows);
+  $('verdict').innerHTML =
+    '<b class="num">' + clearing + ' of ' + rows.length + '</b> stops earn back a credit at ' +
+    '<span class="num">' + money(be) + '</span> per meal. ' +
+    (pour
+      ? 'Best available is <span class="num">' + money(bestPossible) + '</span>. Two meals at that ceiling plus a snack covers a <span class="num">' + money(bestPossible * 2 + SNACK) + '</span> night.'
+      : 'Without a drink on the credit, the whole list compresses and most of it stops paying for itself. That is the honest case against buying this plan.');
+
+  const list = $('list');
+  list.innerHTML = '';
+  rows.forEach(function(d, i){
+    const built = rowMarkup(d, i, be, scaleMax);
+    const li = document.createElement('li');
+    li.className = built.cls;
+    li.innerHTML = built.html;
+    list.appendChild(li);
+  });
+
+  Array.prototype.forEach.call(list.querySelectorAll('[data-plan]'), function(b){
+    b.onclick = function(){
+      const k = b.dataset.plan;
+      if(planned.has(k)) planned.delete(k); else planned.add(k);
+      savePlan(); render();
+    };
+  });
+  Array.prototype.forEach.call(list.querySelectorAll('[data-more]'), function(b){
+    b.onclick = function(){
+      const k = b.dataset.more;
+      if(openRows.has(k)) openRows.delete(k); else openRows.add(k);
+      render();
+    };
+  });
+}
+
+$('cost').oninput = function(e){ nightly = parseFloat(e.target.value); render(); };
+$('pourChip').onclick = function(e){
+  pour = !pour;
+  e.currentTarget.setAttribute('aria-pressed', pour);
+  e.currentTarget.textContent = pour ? 'Counting a drink at 21+' : 'No alcohol on the credit';
+  render();
+};
+$('vegChip').onclick = function(e){
+  vegOnly = !vegOnly;
+  e.currentTarget.setAttribute('aria-pressed', vegOnly);
+  render();
+};
+$('ckChip').onclick = function(e){
+  ckOnly = !ckOnly;
+  e.currentTarget.setAttribute('aria-pressed', ckOnly);
+  render();
+};
+
+buildChips();
+loadPlan();
+</script>
+</body>
+</html>

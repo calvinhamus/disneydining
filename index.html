@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WDW Dining &middot; Four tools for eating at Walt Disney World</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23241535%27/%3E%3Ccircle cx=%2716%27 cy=%2717%27 r=%277%27 fill=%27%23F2B544%27/%3E%3Ccircle cx=%278%27 cy=%279%27 r=%274%27 fill=%27%233FD0C9%27/%3E%3Ccircle cx=%2724%27 cy=%279%27 r=%274%27 fill=%27%23FF7A5A%27/%3E%3C/svg%3E">
+<meta name="theme-color" content="#241535">
+<meta name="description" content="Four interactive planning tools for eating at Walt Disney World: a full dining atlas, quick-service credit value math, and a snack credit allocator.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=DM+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241535; --panel:#31204A; --panel-2:#3B2758; --line:#4B3369;
+    --cyan:#3FD0C9; --coral:#FF7A5A; --gold:#F2B544; --cream:#F6EFE4; --muted:#A28CC0;
+    --dim:#6B5486; --green:#8FD35C;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--ink);color:var(--cream);font-family:"Public Sans",system-ui,sans-serif;
+    font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:820px;margin:0 auto;padding:26px 16px 64px}
+
+  /* ---- site navigation ---- */
+  .sitenav{position:sticky;top:0;z-index:60;background:rgba(36,21,53,.95);
+    -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+    border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:820px;margin:0 auto;padding:0 14px;display:flex;
+    align-items:center;gap:12px;height:46px}
+  .nav-home{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 118,"wght" 800;
+    font-size:13px;letter-spacing:.01em;text-transform:uppercase;color:var(--cream);
+    text-decoration:none;flex:none}
+  .nav-home span{color:var(--gold)}
+  .nav-home:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px}
+  .nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.07em;
+    text-transform:uppercase;color:var(--muted);text-decoration:none;padding:6px 10px;
+    border-radius:999px;white-space:nowrap}
+  .nav-links a:hover{color:var(--cream)}
+  .nav-links a[aria-current=page]{background:var(--cream);color:var(--ink);font-weight:500}
+  .nav-links a:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+  header{border-bottom:2px solid var(--line);padding-bottom:22px;margin-bottom:22px}
+  .eyebrow{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--cyan);margin:0 0 12px}
+  h1{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 118,"wght" 800;
+    font-size:clamp(34px,10vw,60px);line-height:.92;letter-spacing:-.025em;
+    text-transform:uppercase;margin:0 0 16px}
+  h1 em{font-style:normal;color:var(--gold)}
+  .lede{color:var(--muted);font-size:15px;max-width:60ch;margin:0 0 16px}
+  .lede b{color:var(--cream);font-weight:600}
+  .stats{display:flex;flex-wrap:wrap;gap:7px}
+  .stat{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.06em;
+    text-transform:uppercase;border:1px solid var(--line);border-radius:999px;
+    padding:5px 11px;color:var(--muted)}
+  .stat b{color:var(--cream);font-weight:500}
+
+  /* ---- decision strip ---- */
+  .decide{background:var(--panel);border:1px solid var(--line);border-radius:11px;
+    padding:16px;margin-bottom:22px}
+  .decide h2{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 13px;font-weight:400}
+  .dq{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid var(--line);align-items:baseline}
+  .dq:last-child{border-bottom:none;padding-bottom:0}
+  .dq-q{flex:1;font-size:13.5px;color:var(--cream)}
+  .dq a{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.07em;
+    text-transform:uppercase;color:var(--gold);text-decoration:none;white-space:nowrap;
+    border-bottom:1px solid rgba(242,181,68,.4);flex:none}
+  .dq a:hover{color:var(--cream);border-color:var(--cream)}
+  .dq a:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+  /* ---- tool cards ---- */
+  .grid{display:grid;gap:11px;margin-bottom:26px}
+  .card{display:block;text-decoration:none;color:inherit;background:var(--panel);
+    border:1px solid var(--line);border-radius:11px;padding:17px;
+    transition:border-color .16s,background .16s}
+  .card:hover{border-color:var(--muted);background:var(--panel-2)}
+  .card:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+  .c-head{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+  .c-num{font-family:"DM Mono",monospace;font-size:11px;flex:none}
+  .c-title{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 112,"wght" 800;
+    font-size:21px;line-height:1.05;letter-spacing:-.015em;text-transform:uppercase;margin:0}
+  .c-sub{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.07em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 11px}
+  .c-body{font-size:13.5px;color:var(--muted);margin:0 0 13px;line-height:1.55}
+  .c-body b{color:var(--cream);font-weight:600}
+  .c-foot{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+  .tag{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.06em;
+    text-transform:uppercase;border:1px solid var(--line);border-radius:3px;
+    padding:2px 7px;color:var(--muted)}
+  .go{margin-left:auto;font-family:"DM Mono",monospace;font-size:10.5px;
+    letter-spacing:.1em;text-transform:uppercase}
+
+  .card.atlas .c-num,.card.atlas .go{color:var(--gold)}
+  .card.value .c-num,.card.value .go{color:var(--cyan)}
+  .card.qs .c-num,.card.qs .go{color:var(--coral)}
+  .card.snack .c-num,.card.snack .go{color:var(--green)}
+
+  h3.sec{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 12px;font-weight:400;
+    padding-bottom:9px;border-bottom:1px solid var(--line)}
+  .notes{font-size:13px;color:var(--muted);line-height:1.65}
+  .notes p{margin:0 0 11px}
+  .notes p:last-child{margin-bottom:0}
+  .notes b{color:var(--cream);font-weight:600}
+
+  footer{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);
+    font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--dim)}
+
+  @media (min-width:660px){ .grid{grid-template-columns:1fr 1fr} }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<nav class="sitenav">
+  <div class="nav-inner">
+    <a class="nav-home" href="index.html" aria-current="page">WDW<span>Dining</span></a>
+    <div class="nav-links">
+      <a href="atlas.html">Atlas</a>
+      <a href="value.html">Value</a>
+      <a href="quick-service.html">Quick Service</a>
+      <a href="snacks.html">Snacks</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Walt Disney World / Updated July 2026</p>
+  <h1>Four tools for<br><em>eating</em> at Disney</h1>
+  <p class="lede">Not a blog and not a list of favorites. These are <b>calculators with opinions</b>: one maps every restaurant on property against how good the food is versus how much the room does for you, two do the arithmetic on whether the dining plan is earning its price, and one allocates snack credits. Everything runs in the browser and nothing is tracked.</p>
+  <div class="stats">
+    <span class="stat"><b>134</b> restaurants</span>
+    <span class="stat"><b>112</b> snacks</span>
+    <span class="stat"><b>88</b> quick-service counters</span>
+    <span class="stat">no accounts, no tracking</span>
+  </div>
+</header>
+
+<div class="decide">
+  <h2>Start here</h2>
+  <div class="dq"><span class="dq-q">I want to know where to eat, dining plan or not.</span><a href="atlas.html">Atlas &rarr;</a></div>
+  <div class="dq"><span class="dq-q">I have the plan and want to know if it's paying for itself.</span><a href="value.html">Break-Even &rarr;</a></div>
+  <div class="dq"><span class="dq-q">I need plant-based options weighted into the ranking.</span><a href="quick-service.html">Quick Service &rarr;</a></div>
+  <div class="dq"><span class="dq-q">I have snack credits and no idea what to do with them.</span><a href="snacks.html">Snacks &rarr;</a></div>
+</div>
+
+<div class="grid">
+
+  <a class="card atlas" href="atlas.html">
+    <div class="c-head"><span class="c-num">01</span><h2 class="c-title">The Dining Atlas</h2></div>
+    <p class="c-sub">All dining &middot; no dining plan required</p>
+    <p class="c-body">Every restaurant, lounge, and counter worth knowing, plotted on two axes that nobody separates: <b>food quality</b> and <b>immersion</b>. At Disney these often run in opposite directions, which is how you end up paying $95 for a castle view and airline food. Four quadrants, live status warnings for anything closed or under refurbishment.</p>
+    <div class="c-foot">
+      <span class="tag">134 places</span><span class="tag">scatter map</span><span class="tag">what to order</span>
+      <span class="go">Open &rarr;</span>
+    </div>
+  </a>
+
+  <a class="card value" href="value.html">
+    <div class="c-head"><span class="c-num">02</span><h2 class="c-title">Break-Even</h2></div>
+    <p class="c-sub">Quick service &middot; pure value math</p>
+    <p class="c-body">Every counter scored in real dollars as entree ceiling plus drink ceiling, against the break-even your plan actually needs. Toggle the drink off and watch <b>50 of 88 locations drop to 2</b>. That single gap is the entire economic case for buying the plan, and it takes one tap to see.</p>
+    <div class="c-foot">
+      <span class="tag">88 counters</span><span class="tag">break-even line</span><span class="tag">alcohol toggle</span>
+      <span class="go">Open &rarr;</span>
+    </div>
+  </a>
+
+  <a class="card qs" href="quick-service.html">
+    <div class="c-head"><span class="c-num">03</span><h2 class="c-title">Quick Service</h2></div>
+    <p class="c-sub">Quick service &middot; weighted ranking</p>
+    <p class="c-body">The same 88 counters, but with <b>tunable weights</b> for a bar on site and for a real plant-based entree. Drag the dials and the ranking recomputes live. Each bar shows where the score comes from, so you can see whether a place earns its spot on food value or on the drink list.</p>
+    <div class="c-foot">
+      <span class="tag">88 counters</span><span class="tag">weight dials</span><span class="tag">plant-based</span>
+      <span class="go">Open &rarr;</span>
+    </div>
+  </a>
+
+  <a class="card snack" href="snacks.html">
+    <div class="c-head"><span class="c-num">04</span><h2 class="c-title">Snack Credits</h2></div>
+    <p class="c-sub">Snacks &middot; allocation, not ranking</p>
+    <p class="c-body">One credit per night and hundreds of options, so this is an allocation problem. Set your nights, build a basket, watch the surplus. Auto-fill solves it for you. A separate view shows <b>the traps</b>: alcohol is never eligible, souvenir cups never count, and the turkey leg is an entree.</p>
+    <div class="c-foot">
+      <span class="tag">112 snacks</span><span class="tag">basket builder</span><span class="tag">trap list</span>
+      <span class="go">Open &rarr;</span>
+    </div>
+  </a>
+
+</div>
+
+<h3 class="sec">What to trust and what not to</h3>
+<div class="notes">
+  <p><b>Prices are estimates.</b> They were built from current reporting and they move constantly. Use them to rank options against each other, not to budget to the dollar. The break-even math is only as good as the plan price you enter, so check what you actually paid.</p>
+  <p><b>The scores are opinions.</b> Food and immersion ratings in the Atlas are a synthesis of critical consensus, not measured data. They encode judgments you may disagree with. California Grill sits at a 6 for food against a 9 for the room, because the room is still the best on property and the current menu has been widely criticized as coasting. Reasonable people rate that differently.</p>
+  <p><b>Eligibility shifts.</b> Whether an item takes a credit can change between locations and between visits. Anything marked <b>check the board</b> is exactly that. Confirm in My Disney Experience before you build a day around a specific meal, and look for the purple DDP symbol on the menu before you scan.</p>
+  <p><b>Currency.</b> Everything reflects July 2026, including closures, refurbishments, and the 2026 plan pricing. Disney's construction pace means this will drift.</p>
+</div>
+
+<footer>Runs entirely in your browser &middot; saved lists stay on your device</footer>
+
+</div>
+</body>
+</html>

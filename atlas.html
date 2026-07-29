@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dining Atlas &middot; WDW Dining</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23241535%27/%3E%3Ccircle cx=%2716%27 cy=%2717%27 r=%277%27 fill=%27%23F2B544%27/%3E%3Ccircle cx=%278%27 cy=%279%27 r=%274%27 fill=%27%233FD0C9%27/%3E%3Ccircle cx=%2724%27 cy=%279%27 r=%274%27 fill=%27%23FF7A5A%27/%3E%3C/svg%3E">
+<meta name="theme-color" content="#241535">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=DM+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241535; --panel:#31204A; --panel-2:#3B2758; --line:#4B3369;
+    --cyan:#3FD0C9; --coral:#FF7A5A; --gold:#F2B544; --cream:#F6EFE4; --muted:#A28CC0;
+    --dim:#6B5486;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--ink);color:var(--cream);font-family:"Public Sans",system-ui,sans-serif;
+    font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:820px;margin:0 auto;padding:20px 16px 64px}
+
+  header{border-bottom:2px solid var(--line);padding-bottom:18px;margin-bottom:18px}
+  .eyebrow{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--cyan);margin:0 0 10px}
+  h1{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 118,"wght" 800;
+    font-size:clamp(30px,8.5vw,48px);line-height:.94;letter-spacing:-.02em;
+    text-transform:uppercase;margin:0 0 12px}
+  h1 em{font-style:normal;color:var(--gold)}
+  .lede{color:var(--muted);font-size:14px;max-width:58ch;margin:0}
+  .lede b{color:var(--cream);font-weight:600}
+
+  /* tabs */
+  .tabs{display:flex;gap:4px;margin-bottom:14px;background:var(--panel);
+    border:1px solid var(--line);border-radius:9px;padding:4px}
+  .tab{flex:1;font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;background:transparent;color:var(--muted);border:none;
+    border-radius:6px;padding:9px 6px;cursor:pointer}
+  .tab[aria-selected=true]{background:var(--cream);color:var(--ink);font-weight:500}
+  .tab:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+  /* filters */
+  .filters{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:14px;margin-bottom:14px}
+  .frow{margin-bottom:12px}
+  .frow:last-child{margin-bottom:0}
+  .flabel{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+  .chips{display:flex;flex-wrap:wrap;gap:5px}
+  .chip{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.03em;background:transparent;
+    color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer}
+  .chip:hover{color:var(--cream);border-color:var(--muted)}
+  .chip[aria-pressed=true]{background:var(--cream);color:var(--ink);border-color:var(--cream);font-weight:500}
+  .chip.veg[aria-pressed=true]{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+  .chip.open[aria-pressed=true]{background:var(--cyan);border-color:var(--cyan);color:var(--ink)}
+  .chip:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  #q{width:100%;background:var(--ink);border:1px solid var(--line);border-radius:7px;
+    color:var(--cream);font-family:"Public Sans",sans-serif;font-size:14px;padding:9px 11px}
+  #q::placeholder{color:var(--dim)}
+  #q:focus{outline:none;border-color:var(--cyan)}
+  .reset{background:none;border:none;color:var(--muted);font-family:"DM Mono",monospace;
+    font-size:10px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+    text-decoration:underline;padding:0}
+  .reset:hover{color:var(--coral)}
+
+  .count{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;
+    align-items:center;gap:10px;padding:0 2px 10px}
+  .count b{color:var(--gold);font-weight:500}
+
+  /* map */
+  .mapwrap{position:relative;margin-bottom:14px}
+  .plot{position:relative;width:100%;aspect-ratio:1/1;max-height:460px;
+    background:linear-gradient(var(--panel),var(--panel));
+    border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .grid-l{position:absolute;background:var(--line)}
+  .grid-l.v{left:50%;top:0;bottom:0;width:1px}
+  .grid-l.h{top:50%;left:0;right:0;height:1px}
+  .quad{position:absolute;font-family:"DM Mono",monospace;font-size:9px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--dim);max-width:44%;line-height:1.35;pointer-events:none}
+  .q-tr{top:8px;right:9px;text-align:right;color:var(--cyan)}
+  .q-tl{top:8px;left:9px}
+  .q-br{bottom:8px;right:9px;text-align:right}
+  .q-bl{bottom:8px;left:9px;color:var(--coral)}
+  .dot{position:absolute;border-radius:50%;transform:translate(-50%,50%);cursor:pointer;
+    border:1px solid rgba(36,21,53,.75);transition:transform .12s,box-shadow .12s}
+  .dot:hover,.dot:focus-visible{transform:translate(-50%,50%) scale(1.7);z-index:5;outline:none;
+    box-shadow:0 0 0 2px var(--cream)}
+  .dot.sel{transform:translate(-50%,50%) scale(1.9);z-index:6;box-shadow:0 0 0 2px var(--gold)}
+  .axis{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;
+    padding:7px 2px 0}
+  .yaxis{position:absolute;left:-4px;top:50%;transform:translateY(-50%) rotate(-90deg);
+    transform-origin:center;font-family:"DM Mono",monospace;font-size:9.5px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+  .legend{display:flex;flex-wrap:wrap;gap:9px;margin-top:9px;font-family:"DM Mono",monospace;
+    font-size:10px;color:var(--muted);align-items:center}
+  .lg{display:flex;align-items:center;gap:4px}
+  .lg i{width:8px;height:8px;border-radius:50%;display:block}
+
+  /* detail card */
+  .detail{background:var(--panel-2);border:1px solid var(--gold);border-radius:10px;
+    padding:14px;margin-bottom:14px}
+  .detail.empty-state{border-color:var(--line);color:var(--muted);text-align:center;
+    font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+
+  /* cards */
+  ol{list-style:none;margin:0;padding:0}
+  .card{border:1px solid var(--line);border-radius:10px;background:var(--panel);
+    margin-bottom:8px;overflow:hidden;transition:border-color .18s}
+  .card.saved{border-color:var(--gold);background:var(--panel-2)}
+  .card-top{display:flex;align-items:flex-start;gap:11px;padding:12px 13px}
+  .main{flex:1;min-width:0}
+  .name{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 108,"wght" 700;
+    font-size:15.5px;line-height:1.2;letter-spacing:-.01em;margin:0 0 3px}
+  .where{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--muted);margin:0 0 8px}
+  .scores{display:flex;gap:12px;margin-bottom:8px}
+  .sc{flex:1}
+  .sc-lab{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:3px}
+  .sc-bar{height:4px;border-radius:2px;background:#1B0F2A;overflow:hidden}
+  .sc-bar i{display:block;height:100%;border-radius:2px}
+  .sc.food .sc-bar i{background:var(--cyan)}
+  .sc.imm .sc-bar i{background:var(--coral)}
+  .meta{display:flex;flex-wrap:wrap;gap:5px;font-family:"DM Mono",monospace;font-size:10px}
+  .badge{border:1px solid var(--line);color:var(--muted);border-radius:3px;padding:1px 6px;letter-spacing:.04em}
+  .badge.price{color:var(--cream)}
+  .badge.veg{color:var(--gold);border-color:rgba(242,181,68,.45)}
+  .badge.warn{color:var(--coral);border-color:rgba(255,122,90,.5)}
+  .save-btn{width:32px;height:31px;border-radius:6px;border:1px solid var(--line);flex:none;
+    background:transparent;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;
+    display:flex;align-items:center;justify-content:center}
+  .save-btn:hover{color:var(--cream);border-color:var(--muted)}
+  .save-btn[aria-pressed=true]{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+  .save-btn:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+  .body{padding:0 13px 13px}
+  .dt{font-family:"DM Mono",monospace;font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;margin:0 0 3px}
+  .dt.dish{color:var(--cyan)}
+  .dt.take{color:var(--gold)}
+  .dt.book{color:var(--muted)}
+  .dd{margin:0 0 11px;font-size:13.5px}
+  .dd:last-child{margin-bottom:0}
+  .dd.dim{color:var(--muted);font-size:12.5px}
+  .status{background:rgba(255,122,90,.1);border:1px solid rgba(255,122,90,.4);
+    border-radius:6px;padding:7px 9px;margin-bottom:11px;font-size:12.5px;color:var(--coral)}
+
+  .empty{text-align:center;color:var(--muted);font-family:"DM Mono",monospace;font-size:11px;
+    padding:34px 16px;border:1px dashed var(--line);border-radius:10px}
+
+  footer{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--muted);line-height:1.6}
+  footer b{color:var(--cream);font-weight:600}
+  footer p{margin:0 0 10px}
+  footer p:last-child{margin-bottom:0}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  /* ---- site navigation ---- */
+  .sitenav{position:sticky;top:0;z-index:60;background:rgba(36,21,53,.95);
+    -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+    border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:820px;margin:0 auto;padding:0 14px;display:flex;
+    align-items:center;gap:12px;height:46px}
+  .nav-home{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 118,"wght" 800;
+    font-size:13px;letter-spacing:.01em;text-transform:uppercase;color:var(--cream);
+    text-decoration:none;flex:none}
+  .nav-home span{color:var(--gold)}
+  .nav-home:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px}
+  .nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.07em;
+    text-transform:uppercase;color:var(--muted);text-decoration:none;padding:6px 10px;
+    border-radius:999px;white-space:nowrap}
+  .nav-links a:hover{color:var(--cream)}
+  .nav-links a[aria-current=page]{background:var(--cream);color:var(--ink);font-weight:500}
+  .nav-links a:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+</style>
+</head>
+<body>
+<nav class="sitenav">
+  <div class="nav-inner">
+    <a class="nav-home" href="index.html">WDW<span>Dining</span></a>
+    <div class="nav-links">
+        <a href="atlas.html" aria-current="page">Atlas</a>
+        <a href="value.html">Value</a>
+        <a href="quick-service.html">Quick Service</a>
+        <a href="snacks.html">Snacks</a>
+    </div>
+  </div>
+</nav>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Walt Disney World / Complete Dining Guide / July 2026</p>
+  <h1>The dining <em>atlas</em></h1>
+  <p class="lede">Every meal worth knowing about, plotted on the two axes that actually matter and that nobody separates: <b>how good the food is</b> and <b>how much the room does for you</b>. They are not the same thing, and at Disney they are often inversely related. The map shows you which is which.</p>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" id="tabMap" role="tab" aria-selected="true">The map</button>
+  <button class="tab" id="tabList" role="tab" aria-selected="false">The list</button>
+</div>
+
+<div class="filters">
+  <div class="frow"><input type="text" id="q" placeholder="Search a name, a land, a cuisine..." aria-label="Search"></div>
+  <div class="frow">
+    <p class="flabel">Where</p>
+    <div class="chips" id="parkChips"></div>
+  </div>
+  <div class="frow">
+    <p class="flabel">Kind</p>
+    <div class="chips" id="typeChips"></div>
+  </div>
+  <div class="frow">
+    <p class="flabel">Price per person</p>
+    <div class="chips" id="priceChips"></div>
+  </div>
+  <div class="frow">
+    <div class="chips">
+      <button class="chip veg" id="vegChip" aria-pressed="false">Strong plant-based</button>
+      <button class="chip open" id="openChip" aria-pressed="false">Open right now</button>
+      <button class="chip" id="savedChip" aria-pressed="false">My shortlist</button>
+    </div>
+  </div>
+  <div class="frow"><button class="reset" id="resetBtn">Reset everything</button></div>
+</div>
+
+<div class="count">
+  <span><b id="shown">0</b> of <span id="totalN">0</span> places</span>
+  <span><b id="savedN">0</b> saved</span>
+</div>
+
+<section id="mapView">
+  <div class="mapwrap">
+    <div class="plot" id="plot">
+      <span class="grid-l v"></span><span class="grid-l h"></span>
+      <span class="quad q-tl">Book it for the room,<br>not the meal</span>
+      <span class="quad q-tr">Worth going<br>out of your way</span>
+      <span class="quad q-bl">Skip it</span>
+      <span class="quad q-br">Great food,<br>forgettable room</span>
+    </div>
+    <div class="axis"><span>&larr; weaker food</span><span>better food &rarr;</span></div>
+    <div class="legend" id="legend"></div>
+  </div>
+  <div class="detail empty-state" id="detail">Tap any dot for the verdict</div>
+</section>
+
+<section id="listView" hidden>
+  <ol id="list"></ol>
+  <div class="empty" id="empty" hidden>Nothing matches those filters.</div>
+</section>
+
+<footer>
+  <p><b>How to read the scores.</b> Food is cooking quality relative to what else exists on property, not to restaurants in the real world. Immersion is how much the setting, theming, and service add to the meal. A 10 for immersion means the room is the reason to go. These are my synthesis of critical consensus and reporting, not measured data, so treat them as a strong starting opinion rather than fact.</p>
+  <p><b>Booking.</b> Reservations open 60 days out at 6:00am Eastern, and the hardest tables on property go in minutes: Victoria &amp; Albert's, Cinderella's Royal Table, Space 220, and Topolino's breakfast. The top three fine dining rooms now charge a $100 per person no-show fee, and Monsieur Paul wants three days notice to cancel. Almost everything else can be picked up on a walk-up list or a same-day cancellation if you keep checking.</p>
+  <p><b>Currency.</b> Statuses reflect July 2026. Disney's construction pace means this shifts constantly, so confirm in My Disney Experience before you build a day around any one meal.</p>
+  <p style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.55">Atlas build 1</p>
+</footer>
+
+</div>
+
+<script>
+/* ---- storage shim -------------------------------------------------------
+   Inside the Claude artifact sandbox a window.storage API is provided.
+   On a normal web host it is not, so fall back to localStorage and keep
+   saved baskets and shortlists working. Degrades to in-memory if both
+   are unavailable (private browsing, storage disabled).                     */
+(function(){
+  if(window.storage && typeof window.storage.get === "function") return;
+  var mem = {};
+  var ok = false;
+  try{ window.localStorage.setItem("__t","1"); window.localStorage.removeItem("__t"); ok = true; }catch(e){ ok = false; }
+  var K = function(k){ return "wdw-dining:" + k; };
+  window.storage = {
+    get: function(k){
+      try{
+        var v = ok ? window.localStorage.getItem(K(k)) : (mem[k] === undefined ? null : mem[k]);
+        return Promise.resolve(v === null ? null : {key:k, value:v, shared:false});
+      }catch(e){ return Promise.resolve(null); }
+    },
+    set: function(k,v){
+      try{
+        if(ok) window.localStorage.setItem(K(k), v); else mem[k] = v;
+      }catch(e){ mem[k] = v; }
+      return Promise.resolve({key:k, value:v, shared:false});
+    },
+    delete: function(k){
+      try{ if(ok) window.localStorage.removeItem(K(k)); else delete mem[k]; }catch(e){}
+      return Promise.resolve({key:k, deleted:true, shared:false});
+    },
+    list: function(){ return Promise.resolve({keys:[], shared:false}); }
+  };
+})();
+
+/* p = park, a = area, t = type, c = cuisine
+   pr = price band 1..4, f = food 1..10, im = immersion 1..10, v = plant-based 0..2
+   st = status note when something is closed or changing */
+const D = [
+/* ===== MAGIC KINGDOM ===== */
+{n:"Cinderella's Royal Table",p:"Magic Kingdom",a:"Fantasyland",t:"Character",c:"American",pr:4,f:5,im:10,v:1,
+ dish:"Whatever the beef entree is. The kitchen handles it best.",
+ take:"You are buying a table inside the castle and a receiving line of princesses. The food is competent banquet cooking at roughly $95 a head. Nobody has ever left raving about the plate, and nobody regrets the photos either.",
+ book:"The single hardest reservation at Disney World. 60 days out, 6:00am Eastern, prepaid."},
+{n:"Be Our Guest",p:"Magic Kingdom",a:"Fantasyland",t:"Table",c:"French",pr:3,f:6,im:9,v:1,
+ dish:"The filet if it's on. Grey stuff for the bit.",
+ take:"Three staggeringly good rooms, especially the ballroom with its falling snow. The prix fixe has crept up faster than the cooking has improved, but this is still the best-looking meal in the park.",
+ book:"Books out fast at 60 days. Lunch is easier than dinner."},
+{n:"Jungle Navigation Co. Skipper Canteen",p:"Magic Kingdom",a:"Adventureland",t:"Table",c:"Global",pr:2,f:7,im:9,v:2,
+ dish:"Char Siu Pork, or the Whole Fried Fish if you're feeling brave.",
+ take:"The best table service in Magic Kingdom and it isn't close. Genuinely interesting menu, three beautifully detailed rooms, skipper puns delivered deadpan. Perpetually underbooked because the name sounds like a gimmick.",
+ book:"Often available same-day. Walk-ups frequently work."},
+{n:"Liberty Tree Tavern",p:"Magic Kingdom",a:"Liberty Square",t:"Table",c:"American",pr:3,f:6,im:8,v:0,
+ dish:"The all-you-care-to-enjoy Patriot's Platter.",
+ take:"Thanksgiving dinner in July, served family style in a colonial tavern. Comfort food done adequately in a room that does a lot of work. Good for a big hungry group, wrong for a light lunch.",
+ book:"Moderate. 60 days for dinner, lunch usually opens up."},
+{n:"The Crystal Palace",p:"Magic Kingdom",a:"Main Street",t:"Character",c:"American",pr:3,f:5,im:6,v:1,
+ dish:"Skip the entrees, work the carving station.",
+ take:"Winnie the Pooh buffet in a gorgeous glass conservatory. The building is lovely and the food is buffet food. Fine if the characters matter to someone at your table.",
+ book:"Moderate."},
+{n:"The Plaza Restaurant",p:"Magic Kingdom",a:"Main Street",t:"Table",c:"American",pr:2,f:5,im:6,v:1,
+ dish:"The sundae. Honestly, mostly the sundae.",
+ take:"Sandwiches and ice cream in a small Victorian room at the end of Main Street. Cheapest table service in the park and the easiest air-conditioned sit-down when your group is fried.",
+ book:"Easy. Frequently same-day."},
+{n:"Tony's Town Square",p:"Magic Kingdom",a:"Main Street",t:"Table",c:"Italian",pr:2,f:4,im:6,v:1,
+ dish:"The spaghetti and meatballs, for the Lady and the Tramp of it.",
+ take:"Perennially the weakest table service in the park. The theming is charming and the red sauce is not. Book it for nostalgia or because you needed a reservation and this was open.",
+ book:"Easy."},
+{n:"Columbia Harbour House",p:"Magic Kingdom",a:"Liberty Square",t:"Quick",c:"Seafood",pr:1,f:7,im:7,v:1,
+ dish:"Lobster roll, or the New England seafood boil.",
+ take:"Best quick service in Magic Kingdom by a distance. Real seafood at counter prices in a dim colonial ship's-hold interior. The upstairs seating is the quietest room in the park.",
+ book:"No reservation. Mobile order."},
+{n:"Cosmic Ray's Starlight Cafe",p:"Magic Kingdom",a:"Tomorrowland",t:"Quick",c:"American",pr:1,f:6,im:6,v:2,
+ dish:"The new truffle burger.",
+ take:"Recently upgraded and now genuinely worth a stop, especially late. Sonny Eclipse still plays the lounge organ to a mostly empty room, which is its own kind of magic. Vegan Patty Melt is solid.",
+ book:"No reservation. Gets mobbed at peak."},
+{n:"Pecos Bill Tall Tale Inn & Cafe",p:"Magic Kingdom",a:"Frontierland",t:"Quick",c:"Tex-Mex",pr:1,f:5,im:6,v:1,
+ dish:"Build-your-own bowl, loaded at the toppings bar.",
+ take:"The toppings bar is the whole value proposition and it's a good one. Base food is ordinary. Enormous indoor seating, which matters in August.",
+ book:"No reservation."},
+{n:"Casey's Corner",p:"Magic Kingdom",a:"Main Street",t:"Quick",c:"Hot dogs",pr:1,f:5,im:7,v:2,
+ dish:"Corn dog nuggets. The plant-based Chicago dog is legitimately good.",
+ take:"Hot dogs, a ragtime pianist, and a view up Main Street to the castle. The food is a hot dog. The setting is worth more than the food.",
+ book:"No reservation."},
+{n:"Pinocchio Village Haus",p:"Magic Kingdom",a:"Fantasyland",t:"Quick",c:"Pizza",pr:1,f:4,im:7,v:2,
+ dish:"The vegan cheese pizza, which is better than the regular one.",
+ take:"Mediocre flatbreads redeemed entirely by the window seats overlooking the it's a small world boat queue. Most dependable plant-based meal in the park.",
+ book:"No reservation."},
+{n:"Sleepy Hollow Refreshments",p:"Magic Kingdom",a:"Liberty Square",t:"Snack",c:"Waffles",pr:1,f:7,im:8,v:1,
+ dish:"Fresh fruit waffle with Nutella.",
+ take:"A waffle sandwich window with the best castle view of any food location in the park. Sit on the bridge wall and eat it there.",
+ book:"No reservation."},
+{n:"Aloha Isle",p:"Magic Kingdom",a:"Adventureland",t:"Snack",c:"Dessert",pr:1,f:8,im:5,v:2,
+ dish:"Dole Whip float. The float, not the plain cup.",
+ take:"The most famous snack at Walt Disney World and it earns it. Dairy-free by default. The line looks worse than it is.",
+ book:"No reservation."},
+{n:"Gaston's Tavern",p:"Magic Kingdom",a:"Fantasyland",t:"Snack",c:"Bakery",pr:1,f:5,im:8,v:1,
+ dish:"The warm cinnamon roll, split between two people.",
+ take:"A spectacular tavern interior serving almost nothing. Come for the room and the roll, not for a meal. LeFou's Brew is not alcoholic.",
+ book:"No reservation."},
+{n:"Storybook Treats",p:"Magic Kingdom",a:"Fantasyland",t:"Snack",c:"Dessert",pr:1,f:6,im:5,v:1,
+ dish:"Whatever the seasonal sundae is.",
+ take:"Soft serve window that changes with the season. Reliable, quick, and usually shorter than the Dole Whip line.",
+ book:"No reservation."},
+{n:"The Friar's Nook",p:"Magic Kingdom",a:"Fantasyland",t:"Quick",c:"American",pr:1,f:5,im:5,v:1,
+ dish:"Loaded tots.",
+ take:"A tot window. That's the concept and it delivers on it. Not a meal, but a good afternoon patch.",
+ book:"No reservation."},
+{n:"Main Street Bakery",p:"Magic Kingdom",a:"Main Street",t:"Snack",c:"Coffee",pr:1,f:4,im:5,v:1,
+ dish:"Coffee, and get out.",
+ take:"It's a Starbucks in a beautiful shell. Useful at rope drop, pointless otherwise.",
+ book:"No reservation."},
+
+/* ===== EPCOT ===== */
+{n:"Monsieur Paul",p:"EPCOT",a:"France",t:"Signature",c:"French",pr:4,f:10,im:8,v:1,
+ dish:"The prix fixe. There is no other option.",
+ take:"Among the three best meals at Walt Disney World. Art Nouveau room above the France pavilion, exacting classical French cooking descended from Paul Bocuse. Quality over quantity, so arrive hungry but not starving. Around $195 before wine.",
+ book:"60 days. $100 per person no-show fee and three days notice to cancel."},
+{n:"Takumi-Tei",p:"EPCOT",a:"Japan",t:"Signature",c:"Japanese",pr:4,f:10,im:9,v:2,
+ dish:"The full omakase if you can justify it.",
+ take:"Now omakase only, at roughly $150 or $250. Five rooms each built around a natural element, and service that is genuinely about omotenashi rather than theming. There is a full vegetarian omakase that is not an afterthought. The highest-concept restaurant on property.",
+ book:"60 days. $100 per person no-show fee."},
+{n:"Le Cellier Steakhouse",p:"EPCOT",a:"Canada",t:"Signature",c:"Steak",pr:4,f:8,im:5,v:1,
+ dish:"Filet with the cheddar cheese soup to start. The pretzel bread is the sleeper.",
+ take:"Very good steak in a windowless basement that looks like a wine cellar because it is pretending to be one. The cooking justifies the price. The room does not add anything.",
+ book:"60 days, popular but gettable."},
+{n:"Space 220",p:"EPCOT",a:"World Discovery",t:"Table",c:"American",pr:4,f:5,im:10,v:1,
+ dish:"The starters outperform the entrees. Blue Moon Cauliflower.",
+ take:"You ride a fictional space elevator to a table with a live view of Earth from orbit. It is one of the great themed rooms anywhere. The food is airline-adjacent at fine dining prices. Go once, go for lunch, go for the window.",
+ book:"One of the four hardest reservations on property. 60 days, 6:00am."},
+{n:"Shiki-Sai: Sushi Izakaya",p:"EPCOT",a:"Japan",t:"Table",c:"Japanese",pr:3,f:8,im:7,v:1,
+ dish:"The sushi, and the cocktails, which are unusually good.",
+ take:"Quietly one of the better meals in World Showcase. Real sushi, a serious drink list, and some tables with a fireworks view. Consistently overlooked next to its two flashier neighbors.",
+ book:"Moderate. Often available inside 30 days."},
+{n:"Teppan Edo",p:"EPCOT",a:"Japan",t:"Table",c:"Japanese",pr:3,f:7,im:7,v:1,
+ dish:"Chicken and shrimp combination.",
+ take:"Teppanyaki done considerably better than your hometown hibachi place, with the same knife tricks. Communal tables, which is either the fun part or the problem depending on your group.",
+ book:"Moderate."},
+{n:"Via Napoli Ristorante e Pizzeria",p:"EPCOT",a:"Italy",t:"Table",c:"Italian",pr:3,f:8,im:7,v:1,
+ dish:"An individual pizza, not a shared large. The crust holds better.",
+ take:"Genuine Neapolitan wood-fired pizza with imported flour and water treated to match Naples. Loud, cavernous, and the most reliably good food in World Showcase at a normal price.",
+ book:"Moderate. Note the Pizza Pickup window is a separate thing."},
+{n:"Biergarten Restaurant",p:"EPCOT",a:"Germany",t:"Table",c:"German",pr:3,f:6,im:9,v:1,
+ dish:"Go straight for the schnitzel and the spaetzle.",
+ take:"A buffet in a permanently-twilight Bavarian village square with a live oompah band. You are seated with strangers, which sounds terrible and usually is not. The steins are enormous.",
+ book:"Easy to moderate."},
+{n:"San Angel Inn",p:"EPCOT",a:"Mexico",t:"Table",c:"Mexican",pr:3,f:6,im:9,v:1,
+ dish:"Mole Poblano.",
+ take:"Dining under a permanent purple dusk beside a volcano while boats drift past. The single most atmospheric room in World Showcase. The cooking is fine, not memorable. Come for dark and cool on a brutal afternoon.",
+ book:"Moderate."},
+{n:"La Hacienda de San Angel",p:"EPCOT",a:"Mexico",t:"Table",c:"Mexican",pr:3,f:7,im:7,v:1,
+ dish:"The mixed grill for two.",
+ take:"Better food than its famous sibling inside the pyramid, in a waterfront room with a lagoon view. Prime fireworks seating if you time it right.",
+ book:"Moderate. Harder near showtime."},
+{n:"Chefs de France",p:"EPCOT",a:"France",t:"Table",c:"French",pr:3,f:7,im:7,v:1,
+ dish:"Gratin de Macaroni, or the duck.",
+ take:"Bright brasserie with big windows onto the promenade. Approachable French at a fraction of what's happening upstairs at Monsieur Paul. Solid rather than exciting.",
+ book:"Moderate."},
+{n:"La Creperie de Paris",p:"EPCOT",a:"France",t:"Table",c:"French",pr:2,f:8,im:6,v:2,
+ dish:"A savory buckwheat galette, then a sweet crepe. Hard cider alongside.",
+ take:"One of the best value table service meals in any park. Buckwheat galettes are naturally plant-based friendly and the cider list is real. There's also a walk-up window if you don't want to sit.",
+ book:"Easy to moderate."},
+{n:"Rose & Crown Dining Room",p:"EPCOT",a:"United Kingdom",t:"Table",c:"British",pr:3,f:6,im:8,v:1,
+ dish:"Fish and chips, obviously.",
+ take:"Pub food that is exactly as good as it needs to be, in a room with the best fireworks view of any restaurant in World Showcase. Request the patio and time it for the show.",
+ book:"Hard near showtime, easy otherwise."},
+{n:"Restaurant Marrakesh",p:"EPCOT",a:"Morocco",t:"Table",c:"Moroccan",pr:3,f:6,im:8,v:2,
+ dish:"The vegetable couscous or the lamb tagine.",
+ take:"Tiled courtyard, live band, belly dancer, and almost never a crowd. Strong vegetarian and plant-based coverage. Consistently one of the emptiest good rooms in the park.",
+ book:"Easy. Walk-ups common."},
+{n:"Spice Road Table",p:"EPCOT",a:"Morocco",t:"Table",c:"Mediterranean",pr:3,f:6,im:8,v:2,
+ dish:"The mezze platter and a glass of Moroccan wine.",
+ take:"Small plates on the waterfront with an unobstructed lagoon view. Better as a drinks-and-snacks stop than a full dinner. Excellent plant-based options.",
+ book:"Easy except at fireworks."},
+{n:"Garden Grill Restaurant",p:"EPCOT",a:"The Land",t:"Character",c:"American",pr:3,f:7,im:8,v:1,
+ dish:"Family-style skillet. The turkey and the beef both work.",
+ take:"The dining room slowly rotates above the Living with the Land boat ride, and some of what's on your plate was grown downstairs. Chip and Dale in farm gear. Best food of any character meal in the parks.",
+ book:"Moderate to hard."},
+{n:"Akershus Royal Banquet Hall",p:"EPCOT",a:"Norway",t:"Character",c:"Norwegian",pr:3,f:6,im:8,v:1,
+ dish:"The cold seafood board at the start. Most people skip it and shouldn't.",
+ take:"Princess dining in a Norwegian castle hall, at roughly half the cost of Cinderella's Royal Table and with better food. If princesses are the goal, this is the smart booking.",
+ book:"Moderate to hard."},
+{n:"Coral Reef Restaurant",p:"EPCOT",a:"The Seas",t:"Table",c:"Seafood",pr:3,f:5,im:9,v:1,
+ dish:"Anything but the fish, given the circumstances.",
+ take:"A wall of living aquarium next to your table, which is unmatched and slightly awkward. Food has never kept up with the setting.",
+ st:"Dinner only, and closing September 8, 2026 with no announced reopening date. Check before booking.",
+ book:"Currently limited to 4pm to 9pm."},
+{n:"Nine Dragons Restaurant",p:"EPCOT",a:"China",t:"Table",c:"Chinese",pr:2,f:5,im:6,v:1,
+ dish:"The pork belly bao.",
+ take:"Quiet, air conditioned, and rarely busy. The cooking is ordinary American Chinese. Useful as a cool sit-down when World Showcase is punishing.",
+ book:"Easy."},
+{n:"Regal Eagle Smokehouse",p:"EPCOT",a:"American Adventure",t:"Quick",c:"BBQ",pr:1,f:7,im:6,v:2,
+ dish:"Memphis dry-rub ribs. The BBQ jackfruit sandwich is the best plant-based counter item in EPCOT.",
+ take:"Regional American barbecue with a real craft beer list, done under a Muppets-branded roof. Consistently good and easy to get into.",
+ book:"No reservation."},
+{n:"Les Halles Boulangerie-Patisserie",p:"EPCOT",a:"France",t:"Quick",c:"Bakery",pr:1,f:8,im:6,v:1,
+ dish:"A jambon beurre, then a Napoleon. Add a glass of wine.",
+ take:"Among the best counter service on property. Proper French bakery work, sandwiches and quiche, and wine by the glass. The line moves faster than it looks.",
+ book:"No reservation."},
+{n:"Tangierine Cafe",p:"EPCOT",a:"Morocco",t:"Quick",c:"Moroccan",pr:1,f:7,im:7,v:2,
+ dish:"The Mediterranean platter with extra hummus.",
+ take:"The strongest plant-forward counter menu at Walt Disney World, where vegetables are the point rather than a substitution. Reopened as Flavors of the Medina with a changed menu, so check what's current.",
+ book:"No reservation."},
+{n:"Sunshine Seasons",p:"EPCOT",a:"The Land",t:"Quick",c:"Global",pr:1,f:7,im:5,v:2,
+ dish:"Whatever the rotisserie station is doing.",
+ take:"Four stations under one roof, downstairs from Soarin'. Reliable, varied, and the most dependable plant-based counter in the park. Easy to walk past because it's below ground level.",
+ book:"No reservation."},
+{n:"La Cantina de San Angel",p:"EPCOT",a:"Mexico",t:"Quick",c:"Mexican",pr:1,f:6,im:7,v:1,
+ dish:"Tacos and a margarita on the waterfront.",
+ take:"Counter tacos with lagoon-side seating. The drinks are priced like a restaurant and taste like it. No mobile order, so budget for the line.",
+ book:"No reservation."},
+{n:"Yorkshire County Fish Shop",p:"EPCOT",a:"United Kingdom",t:"Quick",c:"British",pr:1,f:7,im:6,v:0,
+ dish:"Fish and chips with a pint from the pub next door.",
+ take:"Better fish and chips than the sit-down dining room behind it, for a third of the price. Eat it on the waterfront wall.",
+ book:"No reservation."},
+{n:"Kringla Bakeri og Kafe",p:"EPCOT",a:"Norway",t:"Snack",c:"Bakery",pr:1,f:7,im:6,v:1,
+ dish:"School bread. Nothing else here matters as much.",
+ take:"A cardamom bun filled with custard and rolled in coconut. One of the great Disney snacks and consistently underrated.",
+ book:"No reservation."},
+{n:"Sommerfest",p:"EPCOT",a:"Germany",t:"Quick",c:"German",pr:1,f:6,im:6,v:2,
+ dish:"Bratwurst and a very large German beer.",
+ take:"Tucked behind the Germany shops and easy to miss. Ask for the off-menu vegan bratwurst, which they walk over from Biergarten. Order in person, not mobile.",
+ book:"No reservation."},
+{n:"Katsura Grill",p:"EPCOT",a:"Japan",t:"Quick",c:"Japanese",pr:1,f:6,im:7,v:1,
+ dish:"Whichever Osusume item is featured.",
+ take:"Fine counter Japanese, but the reason to come is the garden seating up the hill, which is one of the calmest spots in World Showcase.",
+ book:"No reservation."},
+{n:"La Cava del Tequila",p:"EPCOT",a:"Mexico",t:"Lounge",c:"Mexican",pr:2,f:7,im:9,v:1,
+ dish:"Avocado margarita. Trust it.",
+ take:"A tiny cave of a tequila bar inside the Mexico pyramid with over two hundred bottles and staff who know them. One of the best bars on property. Expect a wait for a seat.",
+ book:"Walk-up only."},
+{n:"Rose & Crown Pub",p:"EPCOT",a:"United Kingdom",t:"Lounge",c:"British",pr:2,f:6,im:8,v:1,
+ dish:"A properly poured Guinness and the Scotch egg.",
+ take:"A convincing British pub with an entertainer who has been working the room for years. Walk-up bar seating is usually available even when the dining room is booked solid.",
+ book:"Walk-up bar."},
+{n:"Connections Eatery",p:"EPCOT",a:"World Celebration",t:"Quick",c:"American",pr:1,f:6,im:5,v:2,
+ dish:"The plant-based General Tso tofu salad.",
+ take:"Big, modern, air conditioned, and completely without personality. Useful when you need to feed a group fast in the middle of the park.",
+ book:"No reservation."},
+
+/* ===== HOLLYWOOD STUDIOS ===== */
+{n:"The Hollywood Brown Derby",p:"Hollywood Studios",a:"Hollywood Boulevard",t:"Signature",c:"American",pr:4,f:7,im:8,v:1,
+ dish:"The Cobb salad, tossed tableside, because it was invented at the original.",
+ take:"A careful recreation of the Golden Age Hollywood original, caricatures and all. Food quality has wobbled and service reports are mixed, but the room is a genuine escape from the park outside.",
+ book:"Moderate."},
+{n:"50's Prime Time Cafe",p:"Hollywood Studios",a:"Echo Lake",t:"Table",c:"American",pr:3,f:7,im:10,v:1,
+ dish:"Fried chicken. The peanut butter and jelly milkshake to start.",
+ take:"Your server is your mother and will make you eat your vegetables and keep your elbows off the table. It is a full comedic performance and the fried chicken is actually good. If your group hates being teased, book elsewhere.",
+ book:"Moderate to hard."},
+{n:"Sci-Fi Dine-In Theater",p:"Hollywood Studios",a:"Commissary Lane",t:"Table",c:"American",pr:3,f:5,im:10,v:1,
+ dish:"The milkshakes. Keep expectations low on the entrees.",
+ take:"You sit in a convertible at a 1950s drive-in under a starry ceiling while B-movie trailers loop. The most transporting room in the park and the food is diner-grade at table service prices. Worth doing once for the room alone.",
+ book:"Hard. Books out early."},
+{n:"Roundup Rodeo BBQ",p:"Hollywood Studios",a:"Toy Story Land",t:"Table",c:"BBQ",pr:3,f:6,im:9,v:1,
+ dish:"The family-style platter. It keeps coming.",
+ take:"You are a toy inside Andy's playset, surrounded by oversized game pieces. Enormously charming design and all-you-care-to-enjoy barbecue that is decent without being a destination.",
+ book:"Moderate."},
+{n:"Oga's Cantina",p:"Hollywood Studios",a:"Galaxy's Edge",t:"Lounge",c:"Bar",pr:2,f:6,im:10,v:1,
+ dish:"Fuzzy Tauntaun, for the tingling foam. Ronto Wrap alongside.",
+ take:"The most complete themed bar Disney has built. DJ Rex spins, the drinks are genuinely inventive, and the room sells the setting completely. Strict 45-minute limit and a two-drink maximum.",
+ book:"Reservations open 60 days and vanish. Walk-up list sometimes works at open."},
+{n:"Docking Bay 7 Food and Cargo",p:"Hollywood Studios",a:"Galaxy's Edge",t:"Quick",c:"Global",pr:1,f:7,im:8,v:2,
+ dish:"Ribs, or the Felucian falafel and hummus spread if you're going plant-based.",
+ take:"The strongest counter service in the park, inside a working cargo bay with a chef droid. Menu changes more than most, so check before you plan around a specific dish.",
+ book:"No reservation. Mobile order, the land gets slammed."},
+{n:"Ronto Roasters",p:"Hollywood Studios",a:"Galaxy's Edge",t:"Quick",c:"Wraps",pr:1,f:8,im:8,v:2,
+ dish:"The Ronto Wrap. One of the best things you can eat for under fifteen dollars.",
+ take:"A repurposed podracer engine turns the spit while a droid works the grill. Small menu, executed well. The Zuchii wrap is a real plant-based option with actual heat.",
+ book:"No reservation. Closes around 3pm."},
+{n:"Milk Stand",p:"Hollywood Studios",a:"Galaxy's Edge",t:"Snack",c:"Dessert",pr:1,f:6,im:9,v:2,
+ dish:"Green milk over blue. It's the better one and most people get this wrong.",
+ take:"Plant-based frozen drink that tastes like tropical fruit rather than milk. Divisive, cheap, and a required stop if the land matters to you. Both come in spiked versions.",
+ book:"No reservation."},
+{n:"BaseLine Tap House",p:"Hollywood Studios",a:"Grand Avenue",t:"Lounge",c:"Bar",pr:2,f:6,im:8,v:1,
+ dish:"A California craft draft and the pretzel with beer cheese.",
+ take:"A convincing downtown Los Angeles tap house with a serious California beer list. The back patio is one of the best places to sit in the park.",
+ book:"Walk-up."},
+{n:"Woody's Lunch Box",p:"Hollywood Studios",a:"Toy Story Land",t:"Quick",c:"American",pr:1,f:6,im:8,v:2,
+ dish:"Totchos. The plant-based version is enormous.",
+ take:"A walk-up window built into a giant lunch box. Breakfast here is the best meal it serves. Almost no shade and very little seating, so plan to eat standing.",
+ book:"No reservation."},
+{n:"ABC Commissary",p:"Hollywood Studios",a:"Commissary Lane",t:"Quick",c:"American",pr:1,f:6,im:4,v:2,
+ dish:"The vegan California burger is better than the meat options.",
+ take:"A studio cafeteria with no theming to speak of, which is the point. Air conditioned, rarely a wait, consistently fine. The park's most underrated practical stop.",
+ book:"No reservation."},
+{n:"Backlot Express",p:"Hollywood Studios",a:"Echo Lake",t:"Quick",c:"American",pr:1,f:6,im:5,v:2,
+ dish:"Teriyaki tofu bowl.",
+ take:"Prop-shop theming and a huge amount of seating. The tofu bowl is one of the better plant-based items in the park and nobody orders it.",
+ book:"No reservation."},
+{n:"Hollywood & Vine",p:"Hollywood Studios",a:"Echo Lake",t:"Character",c:"American",pr:3,f:5,im:5,v:1,
+ dish:"Nothing in particular.",
+ take:"A seasonal-themed character buffet that costs about what a signature restaurant costs. Book it if a child in your party specifically needs these characters, otherwise there are better uses of the money.",
+ book:"Easy to moderate."},
+{n:"Sunset Ranch Market",p:"Hollywood Studios",a:"Sunset Boulevard",t:"Quick",c:"American",pr:1,f:6,im:6,v:1,
+ dish:"Fairfax Fare's mashed potato waffle bowl with brisket.",
+ take:"An outdoor food court of three windows sharing one seating area, in the shadow of Tower of Terror. Fairfax Fare is the one worth queuing for.",
+ book:"No reservation."},
+
+/* ===== ANIMAL KINGDOM ===== */
+{n:"Tiffins",p:"Animal Kingdom",a:"Discovery Island",t:"Signature",c:"Global",pr:4,f:9,im:9,v:2,
+ dish:"Whatever the most unfamiliar thing on the menu is. That's the point of the place.",
+ take:"A working art gallery of Imagineering travel sketches, serving genuinely ambitious global cooking. The most adventurous menu at Walt Disney World and the best restaurant in any of the four parks.",
+ book:"Moderate. Easier than its quality suggests."},
+{n:"Nomad Lounge",p:"Animal Kingdom",a:"Discovery Island",t:"Lounge",c:"Global",pr:2,f:8,im:9,v:2,
+ dish:"Braised beef sliders, and any cocktail the bartender points at.",
+ take:"Tiffins' lounge, and for most people the better booking. Small plates at a fraction of the price, one of the best cocktail programs on property, and a shaded waterfront patio that feels a world away from the park.",
+ book:"Moderate. Walk-up list often works."},
+{n:"Satu'li Canteen",p:"Animal Kingdom",a:"Pandora",t:"Quick",c:"Bowls",pr:1,f:8,im:9,v:2,
+ dish:"Build a bowl. Chili-spiced fried tofu over red and sweet potato hash.",
+ take:"Widely considered the best counter service at Walt Disney World. Fully customizable bowls, real vegetables, and a room that looks like a repurposed RDA mess hall. Breakfast here is the rare park breakfast worth eating.",
+ book:"No reservation. Mobile order."},
+{n:"Flame Tree Barbecue",p:"Animal Kingdom",a:"Discovery Island",t:"Quick",c:"BBQ",pr:1,f:8,im:8,v:2,
+ dish:"St. Louis ribs. Impossible burnt ends if you're plant-based.",
+ take:"Serious barbecue at counter prices, with the best outdoor seating on property: a series of shaded pavilions stepping down to the water facing Expedition Everest. Find the lower terraces, not the first one.",
+ book:"No reservation."},
+{n:"Tusker House Restaurant",p:"Animal Kingdom",a:"Africa",t:"Character",c:"African",pr:3,f:7,im:8,v:2,
+ dish:"The African stews and the couscous, not the chicken tenders.",
+ take:"The rare character buffet with food worth eating on its own terms. Spiced African-inspired dishes alongside safe options for kids. Donald and friends in safari gear. Best value character meal in the parks.",
+ book:"Moderate to hard for breakfast."},
+{n:"Yak & Yeti Restaurant",p:"Animal Kingdom",a:"Asia",t:"Table",c:"Pan-Asian",pr:3,f:6,im:8,v:1,
+ dish:"Ahi tuna nachos to start, then the honey chicken.",
+ take:"A beautifully cluttered Nepalese trading-post interior full of real imported antiques. The food divides people sharply and lands somewhere near very good chain Asian. The room is the strong part.",
+ book:"Moderate."},
+{n:"Harambe Market",p:"Animal Kingdom",a:"Africa",t:"Quick",c:"African",pr:1,f:7,im:8,v:1,
+ dish:"The skewers.",
+ take:"A convincing East African street market of separate windows around a shaded courtyard. Reopened in February 2026 after a long refurbishment, and it now carries some of what Restaurantosaurus used to serve.",
+ book:"No reservation."},
+{n:"Pongu Pongu",p:"Animal Kingdom",a:"Pandora",t:"Snack",c:"Bar",pr:1,f:7,im:9,v:2,
+ dish:"Night Blossom. Non-alcoholic and one of the best drinks in any park.",
+ take:"A tiny walk-up window run by a human who went native on Pandora. Layered frozen limeade with boba, plus the lumpia. The line moves and the drink glows.",
+ book:"No reservation."},
+{n:"Dawa Bar",p:"Animal Kingdom",a:"Africa",t:"Lounge",c:"Bar",pr:2,f:5,im:8,v:1,
+ dish:"The Ngoma Nectar or anything with rum.",
+ take:"Outdoor bar in the middle of Harambe with live music most afternoons. Not a food destination, but the best place in the park to sit down with a drink and let the day slow.",
+ book:"Walk-up."},
+{n:"Yak & Yeti Local Food Cafes",p:"Animal Kingdom",a:"Asia",t:"Quick",c:"Asian",pr:1,f:6,im:6,v:1,
+ dish:"The honey chicken rice bowl.",
+ take:"The counter version of the restaurant upstairs, at half the price and a fraction of the wait. Nearly the same food.",
+ book:"No reservation."},
+{n:"Pizzafari",p:"Animal Kingdom",a:"Discovery Island",t:"Quick",c:"Pizza",pr:1,f:4,im:6,v:1,
+ dish:"Cheese flatbread, and manage expectations.",
+ take:"Ordinary flatbreads in gorgeously painted animal-themed rooms. The theming is far better than the food. Heavily air conditioned, which is the real reason to go in August.",
+ book:"No reservation."},
+{n:"Kusafiri Coffee Shop & Bakery",p:"Animal Kingdom",a:"Africa",t:"Snack",c:"Bakery",pr:1,f:7,im:6,v:2,
+ dish:"The plant-based picadillo bowl. Impossible beef over jollof rice.",
+ take:"Looks like a bakery, quietly serves one of the more interesting plant-based meals in the park. Almost nobody looks for real food here.",
+ book:"No reservation."},
+
+/* ===== RESORTS ===== */
+{n:"Victoria & Albert's",p:"Resorts",a:"Grand Floridian",t:"Signature",c:"Fine dining",pr:4,f:10,im:9,v:2,
+ dish:"The tasting menu, with the pairings if you're committing.",
+ take:"The best restaurant at Walt Disney World by a wide margin and the only one with a Michelin star. Six courses, jacket required, adults only. Starts around $300 per person and a couple can clear $800 with wine. Whether that is worth it is a question about you, not about the restaurant.",
+ book:"The hardest table on property. 60 days, prepaid, $100 per person no-show fee."},
+{n:"Topolino's Terrace",p:"Resorts",a:"Riviera Resort",t:"Signature",c:"French-Italian",pr:4,f:9,im:9,v:1,
+ dish:"The wood-fired filet, or the char-crusted duck.",
+ take:"Rooftop dining with fireworks views of two parks, serving inventive but approachable Riviera cooking. Probably the best combination of food, view, and value in the signature tier. Easy Skyliner ride from EPCOT or Hollywood Studios.",
+ book:"Moderate to hard for dinner."},
+{n:"Citricos",p:"Resorts",a:"Grand Floridian",t:"Signature",c:"Floridian",pr:4,f:9,im:8,v:1,
+ dish:"The braised veal shank if it's on. Otherwise whatever the fish is.",
+ take:"Michelin-recognized and arguably the best conventional fine dining at Walt Disney World. Sophisticated citrus-forward Florida cooking, beautifully plated. Portions are small for the price, which is the only real complaint.",
+ book:"Moderate to hard."},
+{n:"Jiko - The Cooking Place",p:"Resorts",a:"Animal Kingdom Lodge",t:"Signature",c:"African",pr:4,f:9,im:9,v:2,
+ dish:"The wild boar tenderloin or the beef short rib.",
+ take:"Unexpected flavor combinations executed with real precision, in a room whose lighting shifts through an African sunset over the course of the evening. The all-South-African wine list is the largest in the country. Worth the trip out to the lodge.",
+ book:"Moderate."},
+{n:"Sanaa",p:"Resorts",a:"Kidani Village",t:"Table",c:"Indian-African",pr:3,f:9,im:9,v:2,
+ dish:"The Indian-style bread service. Order it even if you order nothing else.",
+ take:"Punches far above its price. Adventurous but approachable cooking, giraffes and zebras grazing outside the window, and an out-of-the-way location that keeps it calm and the service attentive. Lunch is a bargain.",
+ book:"Moderate. Book a window table."},
+{n:"Flying Fish",p:"Resorts",a:"BoardWalk",t:"Signature",c:"Seafood",pr:4,f:9,im:8,v:1,
+ dish:"The Chef's Duo: char-crusted New York strip and potato-wrapped red snapper.",
+ take:"Fancy without being stiff, with an open kitchen and a good bar. That signature duo is arguably the best single plate at Walt Disney World. Walk the BoardWalk afterward.",
+ book:"Moderate."},
+{n:"Toledo - Tapas, Steak & Seafood",p:"Resorts",a:"Coronado Springs",t:"Signature",c:"Spanish",pr:4,f:9,im:9,v:1,
+ dish:"Start with tapas, then the steak. The rooftop view is part of the meal.",
+ take:"The best hidden gem on property. Sixteen floors up at the top of Gran Destino Tower, Michelin-recognized, and largely unknown to casual visitors because it caters to conventioneers. Prices are reasonable for the quality. The commute is the only obstacle.",
+ book:"Easier than it should be."},
+{n:"Narcoossee's",p:"Resorts",a:"Grand Floridian",t:"Signature",c:"Seafood",pr:4,f:8,im:9,v:1,
+ dish:"The whole Maine lobster, or the surf and turf.",
+ take:"An octagonal waterfront room on Seven Seas Lagoon with Magic Kingdom fireworks over the water. The most romantic booking at Walt Disney World. Time your reservation about 90 minutes before the show.",
+ book:"Moderate to hard."},
+{n:"California Grill",p:"Resorts",a:"Contemporary",t:"Signature",c:"American",pr:4,f:6,im:9,v:1,
+ dish:"The sushi, which has held up better than the rest of the menu.",
+ take:"Fifteenth floor, wraparound windows, castle fireworks with the show audio piped in. The view is still unmatched. The current prix fixe has been widely criticized as coasting, and serious observers have dropped it from their 2026 rankings. Book it for the room and go in with your eyes open.",
+ book:"Hard, mostly on reputation."},
+{n:"Steakhouse 71",p:"Resorts",a:"Contemporary",t:"Table",c:"Steak",pr:3,f:8,im:6,v:1,
+ dish:"The burger at lunch is one of the best on property. Steak at dinner.",
+ take:"1971-themed and much better than it needs to be. Notably more reasonable than the signature steakhouses while serving comparable beef. Lunch is the value play.",
+ book:"Moderate."},
+{n:"Boma - Flavors of Africa",p:"Resorts",a:"Animal Kingdom Lodge",t:"Table",c:"African",pr:3,f:8,im:7,v:2,
+ dish:"Start with the soups. Finish with Zebra Domes.",
+ take:"The best buffet at Walt Disney World and it isn't particularly close. Genuinely spiced African and Indian dishes alongside safe options, in an open-kitchen marketplace setting. Breakfast is equally strong and cheaper.",
+ book:"Moderate."},
+{n:"Sebastian's Bistro",p:"Resorts",a:"Caribbean Beach",t:"Table",c:"Caribbean",pr:2,f:8,im:7,v:1,
+ dish:"The prix fixe. It is the whole reason to come.",
+ take:"Widely cited as the single best dining value at Walt Disney World: a full multi-course Caribbean prix fixe for around $39. Bright waterfront room, food well above its price. Skyliner accessible.",
+ book:"Easy to moderate."},
+{n:"Story Book Dining at Artist Point",p:"Resorts",a:"Wilderness Lodge",t:"Character",c:"American",pr:4,f:8,im:9,v:1,
+ dish:"The mushroom bisque and the slow-braised pork shank.",
+ take:"Snow White character dining in an enchanted forest, with the Evil Queen working the room in full costume. Far better food than character dining has any obligation to serve. The one character meal adults reliably enjoy.",
+ book:"Hard."},
+{n:"'Ohana",p:"Resorts",a:"Polynesian Village",t:"Table",c:"Polynesian",pr:4,f:6,im:8,v:0,
+ dish:"The bread pudding. The skewers are hit or miss.",
+ take:"All-you-care-to-enjoy skewers brought to the table in a loud, warm, fire-pit room. Beloved by many and considered overrated by most critics, largely on price. The nostalgia is doing real work here.",
+ book:"Hard. Books out at 60 days."},
+{n:"Trader Sam's Grog Grotto",p:"Resorts",a:"Polynesian Village",t:"Lounge",c:"Tiki",pr:2,f:6,im:10,v:1,
+ dish:"The Uh-Oa! if you have four people. Order a Krakatoa and watch what happens.",
+ take:"The most fun room at Walt Disney World. A tiny tiki bar where ordering certain drinks triggers effects, sound, and staff performance. Food is bar snacks and beside the point. Now easier to get into than it has ever been.",
+ book:"Walk-up waitlist. Arrive at open or expect a wait."},
+{n:"Whispering Canyon Cafe",p:"Resorts",a:"Wilderness Lodge",t:"Table",c:"American",pr:3,f:6,im:9,v:1,
+ dish:"The all-you-care-to-enjoy skillet.",
+ take:"A rowdy western hall where servers heckle you and asking for ketchup gets you every bottle in the building. Enormous portions of ordinary comfort food. Do not book this if your table wants a quiet meal.",
+ book:"Easy to moderate."},
+{n:"Geyser Point Bar & Grill",p:"Resorts",a:"Wilderness Lodge",t:"Lounge",c:"American",pr:2,f:8,im:9,v:2,
+ dish:"The bison burger, or the plant-based vegetable burger, which is one of the best on property.",
+ take:"An open-air lodge pavilion on Bay Lake with a full bar and a genuinely good kitchen. No walls, ceiling fans, water on three sides. The best casual meal at any deluxe resort. Take the boat from Magic Kingdom.",
+ book:"Walk-up list for the lounge. The To Go window has no wait."},
+{n:"Kona Cafe",p:"Resorts",a:"Polynesian Village",t:"Table",c:"Pan-Asian",pr:2,f:7,im:6,v:1,
+ dish:"Tonga Toast at breakfast. It is the correct order and the only one that matters.",
+ take:"An open mezzanine overlooking the Polynesian lobby. Breakfast is the reason to come. Dinner is fine but you could do better elsewhere in the same resort.",
+ book:"Easy to moderate."},
+{n:"Yachtsman Steakhouse",p:"Resorts",a:"Yacht Club",t:"Signature",c:"Steak",pr:4,f:8,im:7,v:0,
+ dish:"The porterhouse. There's a butcher working a glass case at the entrance for a reason.",
+ take:"The most approachable signature restaurant on property and a straightforward carnivore's room. Some regulars feel it has slipped and that Flying Fish or Steakhouse 71 now serve better beef.",
+ st:"Closed May 11, 2026 for a long refurbishment. Expected back sometime in August 2026. Confirm before planning around it.",
+ book:"Check availability first."},
+{n:"Bourbon Steak by Michael Mina",p:"Resorts",a:"Swan & Dolphin",t:"Signature",c:"Steak",pr:4,f:8,im:7,v:1,
+ dish:"Prime cuts and the rare bourbon list.",
+ take:"Replaced Shula's in 2025 and is still establishing itself. Serious steakhouse credentials from a real chef. Worth considering alongside Yachtsman, especially while that one is closed.",
+ book:"Moderate. Not on Disney transportation from most resorts."},
+{n:"Beaches & Cream Soda Shop",p:"Resorts",a:"Beach Club",t:"Snack",c:"Ice cream",pr:2,f:8,im:8,v:1,
+ dish:"The Kitchen Sink, if there are at least four of you. Otherwise a single sundae.",
+ take:"A tiny Victorian beachside soda fountain making excellent ice cream and a very good burger. The Kitchen Sink is eight scoops and an entire can of whipped cream, delivered with a siren.",
+ book:"Small room. Book ahead or expect a long wait."},
+{n:"Ale & Compass Restaurant",p:"Resorts",a:"Yacht Club",t:"Table",c:"American",pr:3,f:7,im:7,v:1,
+ dish:"Breakfast. The pot roast at dinner.",
+ take:"A calm New England coastal room that does breakfast better than most resorts do anything. Reliable and rarely crowded.",
+ book:"Easy to moderate."},
+{n:"Chef Mickey's",p:"Resorts",a:"Contemporary",t:"Character",c:"American",pr:4,f:4,im:6,v:1,
+ dish:"There isn't one.",
+ take:"The most famous character meal and one of the weakest. You are paying a signature-restaurant price for a loud buffet under the monorail track. Book it only if meeting the core five characters is genuinely the goal.",
+ book:"Hard, entirely on brand recognition."},
+{n:"Topolino's Breakfast a la Art",p:"Resorts",a:"Riviera Resort",t:"Character",c:"French-Italian",pr:3,f:8,im:8,v:1,
+ dish:"The wood-fired sourdough waffle with prosciutto.",
+ take:"Widely regarded as the best character breakfast at Walt Disney World. Real cooking rather than buffet steam trays, characters in artist smocks, and a rooftop room. Books out fast for good reason.",
+ book:"One of the four hardest reservations on property."},
+{n:"Garden View Lounge",p:"Resorts",a:"Grand Floridian",t:"Lounge",c:"Tea",pr:3,f:7,im:8,v:1,
+ dish:"The full afternoon tea service.",
+ take:"Reopened in March 2026 after a five-year closure, refreshed to match the new lobby. Proper afternoon tea overlooking the Grand Floridian gardens, with the lobby band playing in the distance.",
+ book:"Newly returned, so demand is high. Book ahead."},
+{n:"Enchanted Rose",p:"Resorts",a:"Grand Floridian",t:"Lounge",c:"Bar",pr:2,f:6,im:8,v:1,
+ dish:"Anything from the cocktail list. The bar program is serious.",
+ take:"Beauty and the Beast styling done with restraint rather than as a costume. Four distinct spaces, quiet enough to talk, one monorail stop from Magic Kingdom.",
+ book:"Walk-up."},
+{n:"Territory Lounge",p:"Resorts",a:"Wilderness Lodge",t:"Lounge",c:"Bar",pr:2,f:6,im:8,v:1,
+ dish:"A cocktail and the charcuterie.",
+ take:"A small surveyor's-camp bar off the Wilderness Lodge lobby, all maps and dark wood. One of the most atmospheric places on property to have a drink and almost nobody knows about it.",
+ book:"Walk-up."},
+{n:"Three Bridges Bar & Grill",p:"Resorts",a:"Coronado Springs",t:"Lounge",c:"Latin",pr:2,f:7,im:8,v:1,
+ dish:"The tacos and a mojito.",
+ take:"Built on a platform in the middle of Coronado's lake, reached by three lit bridges. Striking at night, good small plates, and rarely busy because it's a convention resort.",
+ book:"Walk-up."},
+{n:"Primo Piatto",p:"Resorts",a:"Riviera Resort",t:"Quick",c:"Italian",pr:1,f:8,im:6,v:1,
+ dish:"Whatever the pasta of the day is.",
+ take:"Among the best counter-service kitchens at Walt Disney World. Real Italian cooking at quick service prices, and breakfast is well above average. Easy Skyliner hop.",
+ book:"No reservation."},
+{n:"The Mara",p:"Resorts",a:"Animal Kingdom Lodge",t:"Quick",c:"African",pr:1,f:7,im:6,v:1,
+ dish:"The African-spiced entrees, not the burger.",
+ take:"More adventurous than a typical resort counter, which is what you'd expect from this lodge's kitchens. Worth the trip for the savannas even if you eat at the counter.",
+ book:"No reservation."},
+{n:"BoardWalk Deli",p:"Resorts",a:"BoardWalk",t:"Quick",c:"Deli",pr:1,f:7,im:6,v:1,
+ dish:"An oversized deli sandwich and a beer.",
+ take:"One of the better recent additions on property. Walkable from EPCOT's International Gateway and from Hollywood Studios, which makes it a good midday escape from either park.",
+ book:"No reservation."},
+{n:"Trattoria al Forno",p:"Resorts",a:"BoardWalk",t:"Table",c:"Italian",pr:3,f:7,im:6,v:1,
+ dish:"Breakfast. The dinner menu is fine but unremarkable.",
+ take:"Solid Italian on the BoardWalk. The Bon Voyage character breakfast has not returned, so this is currently a standard breakfast service. Staffing shortages are still the stated reason.",
+ book:"Easy."},
+{n:"Turf Club Bar & Grill",p:"Resorts",a:"Saratoga Springs",t:"Table",c:"American",pr:3,f:6,im:6,v:1,
+ dish:"Prime rib or the New York strip.",
+ take:"A quiet horse-racing-themed room that most people never visit. Decent steak, no crowds, and a short boat ride from Disney Springs.",
+ st:"Phased refurbishment running through mid-September 2026. The bar and grill closes mid-August through mid-September while the lounge stays open.",
+ book:"Easy, but confirm what's open."},
+{n:"Cape May Cafe",p:"Resorts",a:"Beach Club",t:"Character",c:"Seafood",pr:3,f:6,im:6,v:1,
+ dish:"The seafood at the dinner clambake.",
+ take:"Minnie's beach-party character breakfast, and a clambake buffet at dinner with no characters. The dinner is the better meal and gets far less attention.",
+ book:"Moderate."},
+{n:"Gasparilla Island Grill",p:"Resorts",a:"Grand Floridian",t:"Quick",c:"American",pr:1,f:6,im:5,v:1,
+ dish:"The flatbreads.",
+ take:"Open extremely late and sometimes around the clock, with a full bar. The most useful post-fireworks food on the monorail loop.",
+ book:"No reservation."},
+
+/* ===== DISNEY SPRINGS ===== */
+{n:"Jaleo by Jose Andres",p:"Disney Springs",a:"West Side",t:"Table",c:"Spanish",pr:4,f:9,im:8,v:2,
+ dish:"Paella from the wood fire, and the jamon iberico.",
+ take:"The best food in Disney Springs and among the best on all of Walt Disney World property. Real Spanish tapas from a chef with actual standing, in a soaring room with a wood-fired paella pit. Vegetables are treated seriously here.",
+ book:"Moderate to hard."},
+{n:"The Boathouse",p:"Disney Springs",a:"The Landing",t:"Table",c:"Seafood",pr:4,f:8,im:9,v:1,
+ dish:"The heritage steaks, or the lobster roll at lunch.",
+ take:"A culinary chameleon: yacht club dining room, casual dockside bar, family room, all in one. Everything from the mac and cheese to the steaks is good. Amphicars outside. Deservedly one of the most popular tables on property.",
+ book:"Moderate. Bar seating is often walk-up."},
+{n:"Morimoto Asia",p:"Disney Springs",a:"The Landing",t:"Table",c:"Pan-Asian",pr:4,f:8,im:9,v:1,
+ dish:"Peking duck, ordered ahead, or the ribs.",
+ take:"A two-story room with hanging glass chandeliers that is one of the most striking interiors in Disney Springs. Pan-Asian rather than strictly Japanese. The street food window downstairs is the cheap way in.",
+ book:"Moderate."},
+{n:"Enzo's Hideaway",p:"Disney Springs",a:"The Landing",t:"Table",c:"Italian",pr:3,f:8,im:9,v:1,
+ dish:"The Sunday supper family style, or the cacio e pepe.",
+ take:"A Prohibition-era rum-runner's tunnel beneath the street, entered down a staircase from an alley. Roman cooking that holds up, in a room that commits fully to the premise. Quieter than anything else in the district.",
+ book:"Moderate."},
+{n:"Chef Art Smith's Homecomin'",p:"Disney Springs",a:"The Landing",t:"Table",c:"Southern",pr:3,f:8,im:6,v:1,
+ dish:"Fried chicken and a doughnut bread pudding. The moonshine cocktails are the real draw.",
+ take:"Florida farm-to-table Southern food with a serious moonshine bar. The fried chicken is legitimately excellent. The room itself is unremarkable, which is why it sits where it does on this map.",
+ book:"Hard. Very popular."},
+{n:"Wine Bar George",p:"Disney Springs",a:"The Landing",t:"Lounge",c:"Small plates",pr:3,f:8,im:7,v:2,
+ dish:"The cheese and charcuterie board, plus whatever the master sommelier is pouring.",
+ take:"Run by one of very few master sommeliers in the country. Excellent small plates, an enormous by-the-glass list, and a rooftop. Works as a full dinner or as one glass while you wait for something else.",
+ book:"Moderate. Walk-up bar seating."},
+{n:"Raglan Road Irish Pub",p:"Disney Springs",a:"The Landing",t:"Table",c:"Irish",pr:3,f:7,im:9,v:1,
+ dish:"The Kevin's Heavenly Ham, and the Dalkey Duo starter.",
+ take:"Bars shipped over from Ireland, live Irish bands, and step dancers on the hour. Better pub food than it has any need to serve. Loud, in a good way.",
+ book:"Moderate. Walk-up bar usually works."},
+{n:"The Edison",p:"Disney Springs",a:"The Landing",t:"Table",c:"American",pr:3,f:6,im:9,v:1,
+ dish:"Cocktails and the truffle fries.",
+ take:"A 1920s industrial power plant turned cabaret, with aerialists and contortionists working the room after dark. Food is solid American brasserie. Come for the show, stay for the cocktail list. Dress code after 10pm.",
+ book:"Moderate."},
+{n:"Maria & Enzo's Ristorante",p:"Disney Springs",a:"The Landing",t:"Table",c:"Italian",pr:3,f:7,im:8,v:1,
+ dish:"The Sicilian pastas.",
+ take:"Set in a fictional 1950s air terminal, with a huge curved window and Art Deco detailing. Good Sicilian cooking in a room that earns its ticket. Sunday brunch is a bargain.",
+ book:"Easy to moderate."},
+{n:"T-REX",p:"Disney Springs",a:"Marketplace",t:"Table",c:"American",pr:3,f:3,im:8,v:1,
+ dish:"Nothing. Eat before you come.",
+ take:"Animatronic dinosaurs, a meteor shower every twenty minutes, and food that is genuinely poor. If you have a dinosaur-obsessed six-year-old this is the best restaurant in Florida. Otherwise it is not a restaurant, it is an attraction with a check.",
+ book:"Easy."},
+{n:"Rainforest Cafe",p:"Disney Springs",a:"Marketplace",t:"Table",c:"American",pr:3,f:3,im:7,v:1,
+ dish:"The Volcano dessert, and only if it's a birthday.",
+ take:"Same operator and same logic as T-REX. Thunderstorms, animatronic gorillas, and mediocre food at real prices. Purely a kid calculation.",
+ book:"Easy."},
+{n:"The Polite Pig",p:"Disney Springs",a:"Town Center",t:"Quick",c:"BBQ",pr:2,f:8,im:6,v:1,
+ dish:"Half chicken or the brisket, with the crispy Brussels sprouts.",
+ take:"Counter-ordered barbecue with a full bourbon bar, from the Ravenous Pig team. The sides are as good as the meat. Best fast meal in Disney Springs.",
+ book:"No reservation."},
+{n:"Gideon's Bakehouse",p:"Disney Springs",a:"The Landing",t:"Snack",c:"Bakery",pr:1,f:9,im:9,v:1,
+ dish:"The half-pound chocolate chip cookie. Split it.",
+ take:"A macabre Victorian bookshop of a bakery serving nearly half-pound cookies that are genuinely among the best baked goods in Florida. Virtual queue most days. Worth the wait once.",
+ book:"Virtual queue. Join it early."},
+{n:"eet by Maneet Chauhan",p:"Disney Springs",a:"Marketplace",t:"Quick",c:"Indian",pr:2,f:8,im:6,v:2,
+ dish:"The bread service, and the chicken tikka naan pizza.",
+ take:"Counter-service Indian from a real chef, with food better than a lot of table service on property. Deep vegetarian menu. Verify it's still operating, since the Springs third-party lineup shifts.",
+ book:"No reservation."},
+{n:"D-Luxe Burger",p:"Disney Springs",a:"Town Center",t:"Quick",c:"Burgers",pr:1,f:8,im:7,v:1,
+ dish:"The signature burger and a spiked gelato shake.",
+ take:"Widely rated the best burger on property. Ranch-house theming that is nicer than a burger counter needs. Order at the kiosks rather than the register.",
+ book:"No reservation."},
+{n:"Cookes of Dublin",p:"Disney Springs",a:"The Landing",t:"Quick",c:"Irish",pr:1,f:7,im:7,v:1,
+ dish:"Fish and chips, and the battered candy bar if you're committing to the bit.",
+ take:"Raglan Road's counter sibling, sharing its kitchen. Heavy portions, full Irish bar, a fraction of the wait next door.",
+ book:"No reservation."},
+{n:"Vivoli il Gelato",p:"Disney Springs",a:"The Landing",t:"Snack",c:"Gelato",pr:1,f:8,im:6,v:1,
+ dish:"Pistachio, or the affogato.",
+ take:"A genuine outpost of a Florentine gelateria that has been operating since 1929. Real gelato, not soft serve. The best sweet thing in Disney Springs that isn't a Gideon's cookie.",
+ book:"No reservation."},
+{n:"Wolfgang Puck Bar & Grill",p:"Disney Springs",a:"Town Center",t:"Table",c:"American",pr:3,f:7,im:6,v:1,
+ dish:"The butternut squash agnolotti.",
+ take:"Reliable and rarely full, which counts for something in Disney Springs on a Saturday night. Good food in a room with no particular point of view.",
+ book:"Easy."},
+{n:"Paddlefish",p:"Disney Springs",a:"The Landing",t:"Table",c:"Seafood",pr:4,f:7,im:8,v:1,
+ dish:"The crab. Sit on the rooftop deck.",
+ take:"A permanently moored riverboat with a rooftop bar that most people never go up to. Good seafood at high prices. The upper deck at sunset is the reason to book.",
+ book:"Easy to moderate."},
+{n:"Frontera Cocina",p:"Disney Springs",a:"Town Center",t:"Table",c:"Mexican",pr:3,f:7,im:6,v:2,
+ dish:"The carnitas, and a margarita from the tequila list.",
+ take:"Rick Bayless doing regional Mexican rather than Tex-Mex, which makes it one of the more distinctive menus in the district. The room is bright and unremarkable.",
+ book:"Easy to moderate."},
+{n:"Terralina Crafted Italian",p:"Disney Springs",a:"The Landing",t:"Table",c:"Italian",pr:3,f:7,im:7,v:1,
+ dish:"The wood-fired pizza and the burrata.",
+ take:"Lakeside Italian with a good patio and less of a wait than Maria & Enzo's. Solid rather than special, which makes it a useful backup when everything else is booked.",
+ book:"Easy."},
+{n:"Earl of Sandwich",p:"Disney Springs",a:"Marketplace",t:"Quick",c:"Sandwiches",pr:1,f:7,im:4,v:1,
+ dish:"The original 1762.",
+ take:"Cheapest real meal in Disney Springs and better than the price suggests. No atmosphere whatsoever. Pure utility, and there is a place for that.",
+ book:"No reservation."},
+{n:"Blaze Fast-Fire'd Pizza",p:"Disney Springs",a:"Town Center",t:"Quick",c:"Pizza",pr:1,f:6,im:4,v:2,
+ dish:"Build your own with vegan cheese if that's your thing.",
+ take:"A chain, and it makes no attempt to be otherwise. The most reliable fully plant-based build in Disney Springs, fast and cheap.",
+ book:"No reservation."},
+{n:"Amorette's Patisserie",p:"Disney Springs",a:"Town Center",t:"Snack",c:"Pastry",pr:1,f:7,im:7,v:0,
+ dish:"A signature character dome cake.",
+ take:"Mirror-glazed cakes that look like jewelry and taste good enough. Worth stopping to look at even if you don't buy.",
+ book:"No reservation."}
+];
+
+const PARKS = ["Magic Kingdom","EPCOT","Hollywood Studios","Animal Kingdom","Disney Springs","Resorts"];
+const TYPES = ["Signature","Table","Character","Quick","Lounge","Snack"];
+const TYPE_COLOR = {Signature:"#F2B544",Table:"#3FD0C9",Character:"#FF7A5A",
+  Quick:"#8FD35C",Lounge:"#C48BF0",Snack:"#F6EFE4"};
+const PRICES = [{k:1,l:"$ under 15"},{k:2,l:"$$ 15-35"},{k:3,l:"$$$ 35-75"},{k:4,l:"$$$$ 75+"}];
+
+let view = "map";
+let fParks = new Set(), fTypes = new Set(), fPrices = new Set();
+let vegOnly = false, openOnly = false, savedOnly = false;
+let query = "";
+let saved = new Set();
+let sel = null;
+
+const $ = function(id){ return document.getElementById(id); };
+const esc = function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); };
+const priceStr = function(n){ return "$".repeat(n); };
+
+async function loadSaved(){
+  try{
+    const r = await window.storage.get("atlas-saved");
+    if(r && r.value) saved = new Set(JSON.parse(r.value));
+  }catch(e){}
+  render();
+}
+async function persist(){
+  try{ await window.storage.set("atlas-saved", JSON.stringify(Array.from(saved))); }catch(e){}
+}
+
+function matches(d){
+  if(fParks.size && !fParks.has(d.p)) return false;
+  if(fTypes.size && !fTypes.has(d.t)) return false;
+  if(fPrices.size && !fPrices.has(d.pr)) return false;
+  if(vegOnly && d.v !== 2) return false;
+  if(openOnly && d.st) return false;
+  if(savedOnly && !saved.has(d.n)) return false;
+  if(query){
+    const hay = (d.n + " " + d.p + " " + d.a + " " + d.c + " " + d.t).toLowerCase();
+    if(hay.indexOf(query) === -1) return false;
+  }
+  return true;
+}
+
+function chipRow(hostId, items, activeSet, labelFn, valFn){
+  const host = $(hostId);
+  host.innerHTML = "";
+  items.forEach(function(item){
+    const val = valFn(item);
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = labelFn(item);
+    b.setAttribute("aria-pressed", activeSet.has(val));
+    b.onclick = function(){
+      if(activeSet.has(val)) activeSet.delete(val); else activeSet.add(val);
+      buildAllChips(); render();
+    };
+    host.appendChild(b);
+  });
+}
+function buildAllChips(){
+  chipRow("parkChips", PARKS, fParks, function(x){return x;}, function(x){return x;});
+  chipRow("typeChips", TYPES, fTypes, function(x){return x;}, function(x){return x;});
+  chipRow("priceChips", PRICES, fPrices, function(x){return x.l;}, function(x){return x.k;});
+}
+
+function buildLegend(){
+  const host = $("legend");
+  host.innerHTML = "";
+  TYPES.forEach(function(t){
+    const s = document.createElement("span");
+    s.className = "lg";
+    s.innerHTML = '<i style="background:' + TYPE_COLOR[t] + '"></i>' + t;
+    host.appendChild(s);
+  });
+  const y = document.createElement("span");
+  y.className = "lg";
+  y.style.color = "var(--dim)";
+  y.textContent = "vertical axis = immersion";
+  host.appendChild(y);
+}
+
+function detailHTML(d){
+  const parts = [];
+  parts.push('<p class="name">' + esc(d.n) + '</p>');
+  parts.push('<p class="where">' + esc(d.p) + ' &middot; ' + esc(d.a) + ' &middot; ' + esc(d.c) + '</p>');
+  parts.push('<div class="scores">');
+  parts.push('<div class="sc food"><div class="sc-lab"><span>Food</span><span>' + d.f + '</span></div><div class="sc-bar"><i style="width:' + (d.f*10) + '%"></i></div></div>');
+  parts.push('<div class="sc imm"><div class="sc-lab"><span>Immersion</span><span>' + d.im + '</span></div><div class="sc-bar"><i style="width:' + (d.im*10) + '%"></i></div></div>');
+  parts.push('</div>');
+  parts.push('<div class="meta" style="margin-bottom:11px">');
+  parts.push('<span class="badge price">' + priceStr(d.pr) + '</span>');
+  parts.push('<span class="badge">' + esc(d.t) + '</span>');
+  if(d.v === 2) parts.push('<span class="badge veg">PLANT-BASED</span>');
+  if(d.st) parts.push('<span class="badge warn">STATUS</span>');
+  parts.push('</div>');
+  if(d.st) parts.push('<div class="status">' + esc(d.st) + '</div>');
+  parts.push('<p class="dt dish">Order this</p><p class="dd">' + esc(d.dish) + '</p>');
+  parts.push('<p class="dt take">The take</p><p class="dd">' + esc(d.take) + '</p>');
+  parts.push('<p class="dt book">Getting in</p><p class="dd dim">' + esc(d.book) + '</p>');
+  return parts.join("");
+}
+
+function renderMap(rows){
+  const plot = $("plot");
+  Array.prototype.forEach.call(plot.querySelectorAll(".dot"), function(el){ el.remove(); });
+  rows.forEach(function(d){
+    const el = document.createElement("button");
+    el.className = "dot" + (sel === d.n ? " sel" : "");
+    const size = 6 + d.pr * 1.6;
+    el.style.width = size + "px";
+    el.style.height = size + "px";
+    el.style.background = TYPE_COLOR[d.t];
+    el.style.left = (4 + ((d.f - 1) / 9) * 92) + "%";
+    el.style.bottom = (4 + ((d.im - 1) / 9) * 92) + "%";
+    el.title = d.n;
+    el.setAttribute("aria-label", d.n + ", food " + d.f + ", immersion " + d.im);
+    el.onclick = function(){ sel = d.n; render(); };
+    plot.appendChild(el);
+  });
+
+  const box = $("detail");
+  const chosen = rows.filter(function(d){ return d.n === sel; })[0];
+  if(chosen){
+    box.className = "detail";
+    box.innerHTML = detailHTML(chosen);
+  }else{
+    box.className = "detail empty-state";
+    box.textContent = "Tap any dot for the verdict";
+  }
+}
+
+function renderList(rows){
+  const list = $("list");
+  list.innerHTML = "";
+  $("empty").hidden = rows.length > 0;
+  rows.sort(function(a,b){ return (b.f + b.im) - (a.f + a.im) || a.n.localeCompare(b.n); });
+  rows.forEach(function(d){
+    const li = document.createElement("li");
+    li.className = "card" + (saved.has(d.n) ? " saved" : "");
+    const head = [];
+    head.push('<div class="card-top"><div class="main">');
+    head.push('<p class="name">' + esc(d.n) + '</p>');
+    head.push('<p class="where">' + esc(d.p) + ' &middot; ' + esc(d.a) + ' &middot; ' + esc(d.c) + '</p>');
+    head.push('<div class="scores">');
+    head.push('<div class="sc food"><div class="sc-lab"><span>Food</span><span>' + d.f + '</span></div><div class="sc-bar"><i style="width:' + (d.f*10) + '%"></i></div></div>');
+    head.push('<div class="sc imm"><div class="sc-lab"><span>Immersion</span><span>' + d.im + '</span></div><div class="sc-bar"><i style="width:' + (d.im*10) + '%"></i></div></div>');
+    head.push('</div>');
+    head.push('<div class="meta">');
+    head.push('<span class="badge price">' + priceStr(d.pr) + '</span>');
+    head.push('<span class="badge">' + esc(d.t) + '</span>');
+    if(d.v === 2) head.push('<span class="badge veg">PLANT-BASED</span>');
+    if(d.st) head.push('<span class="badge warn">CHECK STATUS</span>');
+    head.push('</div></div>');
+    head.push('<button class="save-btn" aria-pressed="' + saved.has(d.n) + '" aria-label="Save ' + esc(d.n) + '" data-save="' + esc(d.n) + '">&#9733;</button>');
+    head.push('</div>');
+    head.push('<div class="body">');
+    if(d.st) head.push('<div class="status">' + esc(d.st) + '</div>');
+    head.push('<p class="dt dish">Order this</p><p class="dd">' + esc(d.dish) + '</p>');
+    head.push('<p class="dt take">The take</p><p class="dd">' + esc(d.take) + '</p>');
+    head.push('<p class="dt book">Getting in</p><p class="dd dim">' + esc(d.book) + '</p>');
+    head.push('</div>');
+    li.innerHTML = head.join("");
+    list.appendChild(li);
+  });
+  Array.prototype.forEach.call(list.querySelectorAll("[data-save]"), function(b){
+    b.onclick = function(){
+      const k = b.getAttribute("data-save");
+      if(saved.has(k)) saved.delete(k); else saved.add(k);
+      persist(); render();
+    };
+  });
+}
+
+function render(){
+  const rows = D.filter(matches);
+  $("shown").textContent = rows.length;
+  $("totalN").textContent = D.length;
+  $("savedN").textContent = saved.size;
+  $("mapView").hidden = view !== "map";
+  $("listView").hidden = view !== "list";
+  $("tabMap").setAttribute("aria-selected", view === "map");
+  $("tabList").setAttribute("aria-selected", view === "list");
+  if(view === "map") renderMap(rows); else renderList(rows.slice());
+}
+
+$("tabMap").onclick = function(){ view = "map"; render(); };
+$("tabList").onclick = function(){ view = "list"; render(); };
+$("q").oninput = function(e){ query = e.target.value.trim().toLowerCase(); render(); };
+$("vegChip").onclick = function(e){
+  vegOnly = !vegOnly; e.currentTarget.setAttribute("aria-pressed", vegOnly); render();
+};
+$("openChip").onclick = function(e){
+  openOnly = !openOnly; e.currentTarget.setAttribute("aria-pressed", openOnly); render();
+};
+$("savedChip").onclick = function(e){
+  savedOnly = !savedOnly; e.currentTarget.setAttribute("aria-pressed", savedOnly); render();
+};
+$("resetBtn").onclick = function(){
+  fParks.clear(); fTypes.clear(); fPrices.clear();
+  vegOnly = openOnly = savedOnly = false; query = ""; sel = null;
+  $("q").value = "";
+  $("vegChip").setAttribute("aria-pressed", false);
+  $("openChip").setAttribute("aria-pressed", false);
+  $("savedChip").setAttribute("aria-pressed", false);
+  buildAllChips(); render();
+};
+
+buildAllChips();
+buildLegend();
+loadSaved();
+</script>
+</body>
+</html>
