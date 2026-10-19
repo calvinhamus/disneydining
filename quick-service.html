@@ -122,6 +122,32 @@
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
   @media (max-width:420px){.detail{padding-left:14px}}
 
+  /* ---- menu panel ---- */
+  .menu-box{margin-top:13px;padding:12px;border:1px solid var(--line);
+    border-radius:9px;background:rgba(63,208,201,.05)}
+  .menu-box .dt{margin-bottom:8px}
+  .mlist{list-style:none;margin:0 0 9px;padding:0}
+  .mlist li{display:flex;gap:10px;align-items:baseline;padding:5px 0;
+    border-bottom:1px dotted var(--line);font-size:13px}
+  .mlist li:last-child{border-bottom:none}
+  .mlist li span{flex:1;min-width:0}
+  .mlist li b{font-family:"DM Mono",monospace;font-size:11.5px;color:var(--cyan);
+    font-weight:500;flex:none}
+  .mnote{font-size:12px;color:var(--muted);margin:0 0 9px;line-height:1.5}
+  .mspend{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  .mspend b{color:var(--cream);font-weight:500}
+  .mbtn{display:inline-block;font-family:"DM Mono",monospace;font-size:10.5px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--cyan);
+    border-radius:6px;padding:8px 13px;text-decoration:none;font-weight:500}
+  .mbtn:hover{background:var(--cream)}
+  .mbtn:focus-visible{outline:2px solid var(--cream);outline-offset:2px}
+  .mlink{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--cyan);text-decoration:none;
+    border:1px solid rgba(63,208,201,.4);border-radius:4px;padding:2px 7px}
+  .mlink:hover{background:var(--cyan);color:var(--ink)}
+  .mlink:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
   /* ---- site navigation ---- */
   .sitenav{position:sticky;top:0;z-index:60;background:rgba(36,21,53,.95);
     -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
@@ -152,6 +178,7 @@
         <a href="value.html">Value</a>
         <a href="quick-service.html" aria-current="page">Quick Service</a>
         <a href="snacks.html">Snacks</a>
+        <a href="drinking.html">Drink the World</a>
     </div>
   </div>
 </nav>
@@ -728,6 +755,13 @@ function buildChips(){
   });
 }
 
+
+/* ---- live menu lookup ---- */
+function menuUrl(name, park){
+  var q = name + " " + park + " menu site:disneyworld.disney.go.com";
+  return "https://www.google.com/search?q=" + encodeURIComponent(q);
+}
+
 function render(){
   const list = document.getElementById('list');
   const rows = DATA
@@ -764,6 +798,7 @@ function render(){
             '<span class="badge ' + (d.alc?'b-alc':'b-none') + '">' + (d.alc===2?'FULL BAR':d.alc===1?'BEER / WINE':'NO ALCOHOL') + '</span>' +
             '<span class="badge ' + (d.veg===2?'b-veg':'b-none') + '">' + (d.veg===2?'PLANT-BASED ENTREE':d.veg===1?'LIMITED PLANT':'NO PLANT ENTREE') + '</span>' +
             '<span class="badge b-none">~$' + d.v + ' VALUE</span>' +
+            '<a class="mlink" href="' + menuUrl(d.n, d.p) + '" target="_blank" rel="noopener">Menu &#8599;</a>' +
           '</div>' +
         '</div>' +
         '<div class="side">' +

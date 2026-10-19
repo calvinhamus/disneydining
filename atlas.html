@@ -141,6 +141,7 @@
   .dt.dish{color:var(--cyan)}
   .dt.take{color:var(--gold)}
   .dt.book{color:var(--muted)}
+  .dt.menu{color:var(--cyan)}
   .dd{margin:0 0 11px;font-size:13.5px}
   .dd:last-child{margin-bottom:0}
   .dd.dim{color:var(--muted);font-size:12.5px}
@@ -157,6 +158,32 @@
   footer p:last-child{margin-bottom:0}
 
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  /* ---- menu panel ---- */
+  .menu-box{margin-top:13px;padding:12px;border:1px solid var(--line);
+    border-radius:9px;background:rgba(63,208,201,.05)}
+  .menu-box .dt{margin-bottom:8px}
+  .mlist{list-style:none;margin:0 0 9px;padding:0}
+  .mlist li{display:flex;gap:10px;align-items:baseline;padding:5px 0;
+    border-bottom:1px dotted var(--line);font-size:13px}
+  .mlist li:last-child{border-bottom:none}
+  .mlist li span{flex:1;min-width:0}
+  .mlist li b{font-family:"DM Mono",monospace;font-size:11.5px;color:var(--cyan);
+    font-weight:500;flex:none}
+  .mnote{font-size:12px;color:var(--muted);margin:0 0 9px;line-height:1.5}
+  .mspend{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  .mspend b{color:var(--cream);font-weight:500}
+  .mbtn{display:inline-block;font-family:"DM Mono",monospace;font-size:10.5px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--cyan);
+    border-radius:6px;padding:8px 13px;text-decoration:none;font-weight:500}
+  .mbtn:hover{background:var(--cream)}
+  .mbtn:focus-visible{outline:2px solid var(--cream);outline-offset:2px}
+  .mlink{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--cyan);text-decoration:none;
+    border:1px solid rgba(63,208,201,.4);border-radius:4px;padding:2px 7px}
+  .mlink:hover{background:var(--cyan);color:var(--ink)}
+  .mlink:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 
   /* ---- site navigation ---- */
   .sitenav{position:sticky;top:0;z-index:60;background:rgba(36,21,53,.95);
@@ -188,6 +215,7 @@
         <a href="value.html">Value</a>
         <a href="quick-service.html">Quick Service</a>
         <a href="snacks.html">Snacks</a>
+        <a href="drinking.html">Drink the World</a>
     </div>
   </div>
 </nav>
@@ -301,10 +329,12 @@
 const D = [
 /* ===== MAGIC KINGDOM ===== */
 {n:"Cinderella's Royal Table",p:"Magic Kingdom",a:"Fantasyland",t:"Character",c:"American",pr:4,f:5,im:10,v:1,
+ menu:[["Prix fixe with character greeting","~$95"]],
  dish:"Whatever the beef entree is. The kitchen handles it best.",
  take:"You are buying a table inside the castle and a receiving line of princesses. The food is competent banquet cooking at roughly $95 a head. Nobody has ever left raving about the plate, and nobody regrets the photos either.",
  book:"The single hardest reservation at Disney World. 60 days out, 6:00am Eastern, prepaid."},
 {n:"Be Our Guest",p:"Magic Kingdom",a:"Fantasyland",t:"Table",c:"French",pr:3,f:6,im:9,v:1,
+ menu:[["Three-course prix fixe","~$67"],["The Grey Stuff",null]],
  dish:"The filet if it's on. Grey stuff for the bit.",
  take:"Three staggeringly good rooms, especially the ballroom with its falling snow. The prix fixe has crept up faster than the cooking has improved, but this is still the best-looking meal in the park.",
  book:"Books out fast at 60 days. Lunch is easier than dinner."},
@@ -329,10 +359,12 @@ const D = [
  take:"Perennially the weakest table service in the park. The theming is charming and the red sauce is not. Book it for nostalgia or because you needed a reservation and this was open.",
  book:"Easy."},
 {n:"Columbia Harbour House",p:"Magic Kingdom",a:"Liberty Square",t:"Quick",c:"Seafood",pr:1,f:7,im:7,v:1,
+ menu:[["Lobster roll",null],["New England seafood boil",null],["Grilled salmon",null],["Shrimp skewer",null]],
  dish:"Lobster roll, or the New England seafood boil.",
  take:"Best quick service in Magic Kingdom by a distance. Real seafood at counter prices in a dim colonial ship's-hold interior. The upstairs seating is the quietest room in the park.",
  book:"No reservation. Mobile order."},
 {n:"Cosmic Ray's Starlight Cafe",p:"Magic Kingdom",a:"Tomorrowland",t:"Quick",c:"American",pr:1,f:6,im:6,v:2,
+ menu:[["Truffle burger, new 2026",null],["Vegan Patty Melt","$13.49"],["Rotisserie chicken",null]],
  dish:"The new truffle burger.",
  take:"Recently upgraded and now genuinely worth a stop, especially late. Sonny Eclipse still plays the lounge organ to a mostly empty room, which is its own kind of magic. Vegan Patty Melt is solid.",
  book:"No reservation. Gets mobbed at peak."},
@@ -341,6 +373,7 @@ const D = [
  take:"The toppings bar is the whole value proposition and it's a good one. Base food is ordinary. Enormous indoor seating, which matters in August.",
  book:"No reservation."},
 {n:"Casey's Corner",p:"Magic Kingdom",a:"Main Street",t:"Quick",c:"Hot dogs",pr:1,f:5,im:7,v:2,
+ menu:[["Corn dog nuggets",null],["Plant-based Chicago-style Dog","$13.49"],["Specialty fries",null]],
  dish:"Corn dog nuggets. The plant-based Chicago dog is legitimately good.",
  take:"Hot dogs, a ragtime pianist, and a view up Main Street to the castle. The food is a hot dog. The setting is worth more than the food.",
  book:"No reservation."},
@@ -375,10 +408,12 @@ const D = [
 
 /* ===== EPCOT ===== */
 {n:"Monsieur Paul",p:"EPCOT",a:"France",t:"Signature",c:"French",pr:4,f:10,im:8,v:1,
+ menu:[["Prix fixe menu","from ~$195"]],
  dish:"The prix fixe. There is no other option.",
  take:"Among the three best meals at Walt Disney World. Art Nouveau room above the France pavilion, exacting classical French cooking descended from Paul Bocuse. Quality over quantity, so arrive hungry but not starving. Around $195 before wine.",
  book:"60 days. $100 per person no-show fee and three days notice to cancel."},
 {n:"Takumi-Tei",p:"EPCOT",a:"Japan",t:"Signature",c:"Japanese",pr:4,f:10,im:9,v:2,
+ menu:[["Omakase","$150 / $250"],["Vegetarian omakase",null]],
  dish:"The full omakase if you can justify it.",
  take:"Now omakase only, at roughly $150 or $250. Five rooms each built around a natural element, and service that is genuinely about omotenashi rather than theming. There is a full vegetarian omakase that is not an afterthought. The highest-concept restaurant on property.",
  book:"60 days. $100 per person no-show fee."},
@@ -452,6 +487,7 @@ const D = [
  take:"Quiet, air conditioned, and rarely busy. The cooking is ordinary American Chinese. Useful as a cool sit-down when World Showcase is punishing.",
  book:"Easy."},
 {n:"Regal Eagle Smokehouse",p:"EPCOT",a:"American Adventure",t:"Quick",c:"BBQ",pr:1,f:7,im:6,v:2,
+ menu:[["Memphis dry-rub pork ribs",null],["BBQ Jackfruit Sandwich","$14.99"],["Texas beef brisket",null],["Craft draft list",null]],
  dish:"Memphis dry-rub ribs. The BBQ jackfruit sandwich is the best plant-based counter item in EPCOT.",
  take:"Regional American barbecue with a real craft beer list, done under a Muppets-branded roof. Consistently good and easy to get into.",
  book:"No reservation."},
@@ -460,6 +496,7 @@ const D = [
  take:"Among the best counter service on property. Proper French bakery work, sandwiches and quiche, and wine by the glass. The line moves faster than it looks.",
  book:"No reservation."},
 {n:"Tangierine Cafe",p:"EPCOT",a:"Morocco",t:"Quick",c:"Moroccan",pr:1,f:7,im:7,v:2,
+ menu:[["Mediterranean platters",null],["Hummus, falafel, tabbouleh",null]],
  dish:"The Mediterranean platter with extra hummus.",
  take:"The strongest plant-forward counter menu at Walt Disney World, where vegetables are the point rather than a substitution. Reopened as Flavors of the Medina with a changed menu, so check what's current.",
  book:"No reservation."},
@@ -468,6 +505,7 @@ const D = [
  take:"Four stations under one roof, downstairs from Soarin'. Reliable, varied, and the most dependable plant-based counter in the park. Easy to walk past because it's below ground level.",
  book:"No reservation."},
 {n:"La Cantina de San Angel",p:"EPCOT",a:"Mexico",t:"Quick",c:"Mexican",pr:1,f:6,im:7,v:1,
+ menu:[["Tacos",null],["Empanadas con Queso","~$15"],["Nachos, black bean option",null]],
  dish:"Tacos and a margarita on the waterfront.",
  take:"Counter tacos with lagoon-side seating. The drinks are priced like a restaurant and taste like it. No mobile order, so budget for the line.",
  book:"No reservation."},
@@ -480,6 +518,7 @@ const D = [
  take:"A cardamom bun filled with custard and rolled in coconut. One of the great Disney snacks and consistently underrated.",
  book:"No reservation."},
 {n:"Sommerfest",p:"EPCOT",a:"Germany",t:"Quick",c:"German",pr:1,f:6,im:6,v:2,
+ menu:[["Bratwurst",null],["Vegan bratwurst, off menu","$12.69"],["Large German drafts",null]],
  dish:"Bratwurst and a very large German beer.",
  take:"Tucked behind the Germany shops and easy to miss. Ask for the off-menu vegan bratwurst, which they walk over from Biergarten. Order in person, not mobile.",
  book:"No reservation."},
@@ -496,6 +535,7 @@ const D = [
  take:"A convincing British pub with an entertainer who has been working the room for years. Walk-up bar seating is usually available even when the dining room is booked solid.",
  book:"Walk-up bar."},
 {n:"Connections Eatery",p:"EPCOT",a:"World Celebration",t:"Quick",c:"American",pr:1,f:6,im:5,v:2,
+ menu:[["Plant-based General Tso Tofu Salad",null],["Pizzas and burgers",null]],
  dish:"The plant-based General Tso tofu salad.",
  take:"Big, modern, air conditioned, and completely without personality. Useful when you need to feed a group fast in the middle of the park.",
  book:"No reservation."},
@@ -522,10 +562,12 @@ const D = [
  take:"The most complete themed bar Disney has built. DJ Rex spins, the drinks are genuinely inventive, and the room sells the setting completely. Strict 45-minute limit and a two-drink maximum.",
  book:"Reservations open 60 days and vanish. Walk-up list sometimes works at open."},
 {n:"Docking Bay 7 Food and Cargo",p:"Hollywood Studios",a:"Galaxy's Edge",t:"Quick",c:"Global",pr:1,f:7,im:8,v:2,
+ menu:[["Felucian Falafel & Hummus Garden Spread","$13.29"],["Batuuan Beef & Crispy Topato Stir-fry",null],["Peka Tuna Poke",null],["Smoked Kaadu Ribs",null],["Yuca fries, after 3pm",null]],
  dish:"Ribs, or the Felucian falafel and hummus spread if you're going plant-based.",
  take:"The strongest counter service in the park, inside a working cargo bay with a chef droid. Menu changes more than most, so check before you plan around a specific dish.",
  book:"No reservation. Mobile order, the land gets slammed."},
 {n:"Ronto Roasters",p:"Hollywood Studios",a:"Galaxy's Edge",t:"Quick",c:"Wraps",pr:1,f:8,im:8,v:2,
+ menu:[["Ronto Wrap",null],["Zuchii Wrap, plant-based","$12.99"],["Triple Suns Breakfast Wrap",null]],
  dish:"The Ronto Wrap. One of the best things you can eat for under fifteen dollars.",
  take:"A repurposed podracer engine turns the spit while a droid works the grill. Small menu, executed well. The Zuchii wrap is a real plant-based option with actual heat.",
  book:"No reservation. Closes around 3pm."},
@@ -538,14 +580,17 @@ const D = [
  take:"A convincing downtown Los Angeles tap house with a serious California beer list. The back patio is one of the best places to sit in the park.",
  book:"Walk-up."},
 {n:"Woody's Lunch Box",p:"Hollywood Studios",a:"Toy Story Land",t:"Quick",c:"American",pr:1,f:6,im:8,v:2,
+ menu:[["Plant-Based Totchos","$10.99"],["Lunch Box Tart",null],["Grilled cheese",null]],
  dish:"Totchos. The plant-based version is enormous.",
  take:"A walk-up window built into a giant lunch box. Breakfast here is the best meal it serves. Almost no shade and very little seating, so plan to eat standing.",
  book:"No reservation."},
 {n:"ABC Commissary",p:"Hollywood Studios",a:"Commissary Lane",t:"Quick",c:"American",pr:1,f:6,im:4,v:2,
+ menu:[["Vegan California Burger","$13.99"],["Seasonal platter",null],["Watermelon margarita",null]],
  dish:"The vegan California burger is better than the meat options.",
  take:"A studio cafeteria with no theming to speak of, which is the point. Air conditioned, rarely a wait, consistently fine. The park's most underrated practical stop.",
  book:"No reservation."},
 {n:"Backlot Express",p:"Hollywood Studios",a:"Echo Lake",t:"Quick",c:"American",pr:1,f:6,im:5,v:2,
+ menu:[["Teriyaki Tofu Bowl","$13.29"],["Cheeseburger",null],["Chicken and biscuit",null]],
  dish:"Teriyaki tofu bowl.",
  take:"Prop-shop theming and a huge amount of seating. The tofu bowl is one of the better plant-based items in the park and nobody orders it.",
  book:"No reservation."},
@@ -568,10 +613,12 @@ const D = [
  take:"Tiffins' lounge, and for most people the better booking. Small plates at a fraction of the price, one of the best cocktail programs on property, and a shaded waterfront patio that feels a world away from the park.",
  book:"Moderate. Walk-up list often works."},
 {n:"Satu'li Canteen",p:"Animal Kingdom",a:"Pandora",t:"Quick",c:"Bowls",pr:1,f:8,im:9,v:2,
+ menu:[["Chili-Spiced Crispy Fried Tofu Bowl","$13.49"],["Ocean Moon Bowl, tuna and blue noodles",null],["Combination Bowl",null],["Cheeseburger Steamed Pods",null]],
  dish:"Build a bowl. Chili-spiced fried tofu over red and sweet potato hash.",
  take:"Widely considered the best counter service at Walt Disney World. Fully customizable bowls, real vegetables, and a room that looks like a repurposed RDA mess hall. Breakfast here is the rare park breakfast worth eating.",
  book:"No reservation. Mobile order."},
 {n:"Flame Tree Barbecue",p:"Animal Kingdom",a:"Discovery Island",t:"Quick",c:"BBQ",pr:1,f:8,im:8,v:2,
+ menu:[["St. Louis Ribs",null],["Multi-meat sampler",null],["Impossible Burnt Ends","$12.29"],["Pulled pork and cheese fries","~$10.50"]],
  dish:"St. Louis ribs. Impossible burnt ends if you're plant-based.",
  take:"Serious barbecue at counter prices, with the best outdoor seating on property: a series of shaded pavilions stepping down to the water facing Expedition Everest. Find the lower terraces, not the first one.",
  book:"No reservation."},
@@ -604,12 +651,14 @@ const D = [
  take:"Ordinary flatbreads in gorgeously painted animal-themed rooms. The theming is far better than the food. Heavily air conditioned, which is the real reason to go in August.",
  book:"No reservation."},
 {n:"Kusafiri Coffee Shop & Bakery",p:"Animal Kingdom",a:"Africa",t:"Snack",c:"Bakery",pr:1,f:7,im:6,v:2,
+ menu:[["Plant-based Picadillo Bowl","$12.99"]],
  dish:"The plant-based picadillo bowl. Impossible beef over jollof rice.",
  take:"Looks like a bakery, quietly serves one of the more interesting plant-based meals in the park. Almost nobody looks for real food here.",
  book:"No reservation."},
 
 /* ===== RESORTS ===== */
 {n:"Victoria & Albert's",p:"Resorts",a:"Grand Floridian",t:"Signature",c:"Fine dining",pr:4,f:10,im:9,v:2,
+ menu:[["Tasting menu","from ~$300"],["Wine pairings",null]],
  dish:"The tasting menu, with the pairings if you're committing.",
  take:"The best restaurant at Walt Disney World by a wide margin and the only one with a Michelin star. Six courses, jacket required, adults only. Starts around $300 per person and a couple can clear $800 with wine. Whether that is worth it is a question about you, not about the restaurant.",
  book:"The hardest table on property. 60 days, prepaid, $100 per person no-show fee."},
@@ -654,6 +703,7 @@ const D = [
  take:"The best buffet at Walt Disney World and it isn't particularly close. Genuinely spiced African and Indian dishes alongside safe options, in an open-kitchen marketplace setting. Breakfast is equally strong and cheaper.",
  book:"Moderate."},
 {n:"Sebastian's Bistro",p:"Resorts",a:"Caribbean Beach",t:"Table",c:"Caribbean",pr:2,f:8,im:7,v:1,
+ menu:[["Caribbean prix fixe","~$39"]],
  dish:"The prix fixe. It is the whole reason to come.",
  take:"Widely cited as the single best dining value at Walt Disney World: a full multi-course Caribbean prix fixe for around $39. Bright waterfront room, food well above its price. Skyliner accessible.",
  book:"Easy to moderate."},
@@ -674,6 +724,7 @@ const D = [
  take:"A rowdy western hall where servers heckle you and asking for ketchup gets you every bottle in the building. Enormous portions of ordinary comfort food. Do not book this if your table wants a quiet meal.",
  book:"Easy to moderate."},
 {n:"Geyser Point Bar & Grill",p:"Resorts",a:"Wilderness Lodge",t:"Lounge",c:"American",pr:2,f:8,im:9,v:2,
+ menu:[["Plant-based Vegetable Burger","~$23"],["Bison burger",null],["Mac and 'Cheese' Bites",null]],
  dish:"The bison burger, or the plant-based vegetable burger, which is one of the best on property.",
  take:"An open-air lodge pavilion on Bay Lake with a full bar and a genuinely good kitchen. No walls, ceiling fans, water on three sides. The best casual meal at any deluxe resort. Take the boat from Magic Kingdom.",
  book:"Walk-up list for the lounge. The To Go window has no wait."},
@@ -798,6 +849,7 @@ const D = [
  take:"Same operator and same logic as T-REX. Thunderstorms, animatronic gorillas, and mediocre food at real prices. Purely a kid calculation.",
  book:"Easy."},
 {n:"The Polite Pig",p:"Disney Springs",a:"Town Center",t:"Quick",c:"BBQ",pr:2,f:8,im:6,v:1,
+ menu:[["Half chicken",null],["Brisket plate",null],["Crispy Brussels sprouts",null],["Bourbon bar",null]],
  dish:"Half chicken or the brisket, with the crispy Brussels sprouts.",
  take:"Counter-ordered barbecue with a full bourbon bar, from the Ravenous Pig team. The sides are as good as the meat. Best fast meal in Disney Springs.",
  book:"No reservation."},
@@ -806,6 +858,7 @@ const D = [
  take:"A macabre Victorian bookshop of a bakery serving nearly half-pound cookies that are genuinely among the best baked goods in Florida. Virtual queue most days. Worth the wait once.",
  book:"Virtual queue. Join it early."},
 {n:"eet by Maneet Chauhan",p:"Disney Springs",a:"Marketplace",t:"Quick",c:"Indian",pr:2,f:8,im:6,v:2,
+ menu:[["Bread service","$19.95"],["Potato and pea samosas","$11.95"],["Chicken tikka naan pizza",null]],
  dish:"The bread service, and the chicken tikka naan pizza.",
  take:"Counter-service Indian from a real chef, with food better than a lot of table service on property. Deep vegetarian menu. Verify it's still operating, since the Springs third-party lineup shifts.",
  book:"No reservation."},
@@ -931,6 +984,37 @@ function buildLegend(){
   host.appendChild(y);
 }
 
+
+/* ---- menus -------------------------------------------------------------
+   Disney rotates menus constantly and publishes them per location, so the
+   only honest way to show a full menu is to link the live official page.
+   Items listed inline are ones that were actually verified; everything
+   else says so rather than guessing.                                      */
+const SPEND = {1:"under $15", 2:"$15 to $35", 3:"$35 to $75", 4:"$75 and up"};
+function menuUrl(name, park){
+  var q = name + " " + park + " menu site:disneyworld.disney.go.com";
+  return "https://www.google.com/search?q=" + encodeURIComponent(q);
+}
+function menuBlock(d){
+  var p = [];
+  p.push('<div class="menu-box">');
+  p.push('<p class="dt menu">On the menu</p>');
+  if(d.menu && d.menu.length){
+    p.push('<ul class="mlist">');
+    d.menu.forEach(function(m){
+      p.push('<li><span>' + esc(m[0]) + '</span>' + (m[1] ? '<b>' + esc(m[1]) + '</b>' : '') + '</li>');
+    });
+    p.push('</ul>');
+    p.push('<p class="mnote">Verified items, not the full card. Menus rotate, so check the live page before you plan around a dish.</p>');
+  }else{
+    p.push('<p class="mnote">No verified item list on file for this one. Rather than guess at a menu, the button below opens Disney\'s current official one.</p>');
+  }
+  p.push('<p class="mspend">Typical per person &middot; <b>' + SPEND[d.pr] + '</b></p>');
+  p.push('<a class="mbtn" href="' + menuUrl(d.n, d.p) + '" target="_blank" rel="noopener">Open current menu &#8599;</a>');
+  p.push('</div>');
+  return p.join("");
+}
+
 function detailHTML(d){
   const parts = [];
   parts.push('<p class="name">' + esc(d.n) + '</p>');
@@ -949,6 +1033,7 @@ function detailHTML(d){
   parts.push('<p class="dt dish">Order this</p><p class="dd">' + esc(d.dish) + '</p>');
   parts.push('<p class="dt take">The take</p><p class="dd">' + esc(d.take) + '</p>');
   parts.push('<p class="dt book">Getting in</p><p class="dd dim">' + esc(d.book) + '</p>');
+  parts.push(menuBlock(d));
   return parts.join("");
 }
 
@@ -1010,6 +1095,7 @@ function renderList(rows){
     head.push('<p class="dt dish">Order this</p><p class="dd">' + esc(d.dish) + '</p>');
     head.push('<p class="dt take">The take</p><p class="dd">' + esc(d.take) + '</p>');
     head.push('<p class="dt book">Getting in</p><p class="dd dim">' + esc(d.book) + '</p>');
+    head.push(menuBlock(d));
     head.push('</div>');
     li.innerHTML = head.join("");
     list.appendChild(li);

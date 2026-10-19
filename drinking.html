@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drinking Around the World &middot; WDW Dining</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23241535%27/%3E%3Ccircle cx=%2716%27 cy=%2717%27 r=%277%27 fill=%27%23F2B544%27/%3E%3Ccircle cx=%278%27 cy=%279%27 r=%274%27 fill=%27%233FD0C9%27/%3E%3Ccircle cx=%2724%27 cy=%279%27 r=%274%27 fill=%27%23FF7A5A%27/%3E%3C/svg%3E">
+<meta name="theme-color" content="#241535">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=DM+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241535; --panel:#31204A; --panel-2:#3B2758; --line:#4B3369;
+    --cyan:#3FD0C9; --coral:#FF7A5A; --gold:#F2B544; --cream:#F6EFE4; --muted:#A28CC0;
+    --dim:#6B5486; --green:#8FD35C; --violet:#C48BF0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--ink);color:var(--cream);font-family:"Public Sans",system-ui,sans-serif;
+    font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:820px;margin:0 auto;padding:20px 16px 64px}
+
+  header{border-bottom:2px solid var(--line);padding-bottom:18px;margin-bottom:16px}
+  .eyebrow{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--cyan);margin:0 0 10px}
+  h1{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 118,"wght" 800;
+    font-size:clamp(30px,8.5vw,48px);line-height:.93;letter-spacing:-.02em;
+    text-transform:uppercase;margin:0 0 12px}
+  h1 em{font-style:normal;color:var(--gold)}
+  .lede{color:var(--muted);font-size:14px;max-width:57ch;margin:0}
+  .lede b{color:var(--cream);font-weight:600}
+
+  /* ---------- passport ---------- */
+  .passport{background:var(--panel);border:1px solid var(--line);border-radius:11px;
+    padding:15px;margin-bottom:13px}
+  .pp-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:13px}
+  .pp-lab{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted)}
+  .pp-count{font-family:"DM Mono",monospace;font-size:12px;color:var(--gold)}
+
+  .stamps{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+  .stamp{width:40px;height:40px;border-radius:50%;border:2px dashed var(--line);
+    display:flex;align-items:center;justify-content:center;flex:none;
+    font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.03em;color:var(--dim);
+    background:transparent;cursor:pointer;padding:0;transition:transform .18s,color .18s,border-color .18s}
+  .stamp:hover{border-color:var(--muted);color:var(--muted)}
+  .stamp.on{border-style:double;border-width:3px;font-weight:500}
+  .stamp:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+
+  .tally{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;
+    padding-top:13px;border-top:1px solid var(--line)}
+  .t-lab{font-family:"DM Mono",monospace;font-size:8.5px;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 2px}
+  .t-val{font-family:"DM Mono",monospace;font-size:15px;color:var(--cream);margin:0}
+  .t-val.warn{color:var(--gold)}
+  .t-val.hot{color:var(--coral)}
+  .t-val.cool{color:var(--cyan)}
+
+  /* ---------- setup ---------- */
+  .setup{background:var(--panel);border:1px solid var(--line);border-radius:11px;
+    padding:14px;margin-bottom:13px}
+  .srow{margin-bottom:12px}
+  .srow:last-child{margin-bottom:0}
+  .flabel{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+  .chips{display:flex;flex-wrap:wrap;gap:5px}
+  .chip{font-family:"DM Mono",monospace;font-size:10.5px;background:transparent;
+    color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 11px;cursor:pointer}
+  .chip:hover{color:var(--cream);border-color:var(--muted)}
+  .chip[aria-pressed=true]{background:var(--cream);color:var(--ink);border-color:var(--cream);font-weight:500}
+  .chip.share[aria-pressed=true]{background:var(--green);border-color:var(--green);color:var(--ink)}
+  .chip:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  .resetbtn{background:none;border:none;color:var(--muted);font-family:"DM Mono",monospace;
+    font-size:10px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+    text-decoration:underline;padding:0}
+  .resetbtn:hover{color:var(--coral)}
+
+  /* ---------- reality check ---------- */
+  .reality{border-radius:11px;padding:13px 15px;margin-bottom:16px;font-size:13px;line-height:1.55;
+    background:rgba(63,208,201,.07);border:1px solid rgba(63,208,201,.35);color:var(--muted)}
+  .reality.warn{background:rgba(242,181,68,.08);border-color:rgba(242,181,68,.4)}
+  .reality.hot{background:rgba(255,122,90,.09);border-color:rgba(255,122,90,.45)}
+  .reality b{color:var(--cream);font-weight:600}
+  .reality .num{font-family:"DM Mono",monospace}
+
+  /* ---------- route ---------- */
+  ol{list-style:none;margin:0;padding:0}
+  .stop{border:1px solid var(--line);border-radius:11px;background:var(--panel);
+    margin-bottom:9px;overflow:hidden}
+  .stop.done{border-color:var(--gold);background:var(--panel-2)}
+  .stop.rest{border-style:dashed;background:transparent}
+  .stop.rest.done{border-style:solid;border-color:var(--cyan);background:rgba(63,208,201,.06)}
+  .s-head{display:flex;align-items:flex-start;gap:11px;padding:13px 14px}
+  .s-idx{font-family:"DM Mono",monospace;font-size:11px;color:var(--muted);
+    width:20px;flex:none;padding-top:4px;text-align:right}
+  .s-main{flex:1;min-width:0}
+  .s-name{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 110,"wght" 800;
+    font-size:18px;line-height:1.1;letter-spacing:-.01em;text-transform:uppercase;margin:0 0 3px}
+  .s-sub{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.06em;
+    color:var(--muted);margin:0 0 10px}
+  .s-tip{font-size:12.5px;color:var(--muted);margin:10px 0 0;line-height:1.5}
+  .s-tip b{color:var(--cream);font-weight:600}
+
+  .pours{display:flex;flex-direction:column;gap:6px}
+  .pour{display:flex;align-items:center;gap:9px;width:100%;text-align:left;cursor:pointer;
+    background:transparent;border:1px solid var(--line);border-radius:8px;padding:9px 11px;
+    color:inherit;font-family:inherit;font-size:13.5px}
+  .pour:hover{border-color:var(--muted)}
+  .pour.on{border-color:var(--gold);background:rgba(242,181,68,.1)}
+  .pour:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  .p-tick{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--line);flex:none}
+  .pour.on .p-tick{background:var(--gold);border-color:var(--gold)}
+  .p-body{flex:1;min-width:0}
+  .p-name{display:block;line-height:1.25}
+  .p-where{display:block;font-family:"DM Mono",monospace;font-size:10px;color:var(--muted);margin-top:2px}
+  .p-stats{font-family:"DM Mono",monospace;font-size:10px;color:var(--muted);flex:none;text-align:right;line-height:1.4}
+  .p-stats b{color:var(--cream);font-weight:500;display:block}
+
+  .skip{background:none;border:none;color:var(--dim);font-family:"DM Mono",monospace;
+    font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+    padding:7px 0 0;text-decoration:underline}
+  .skip:hover{color:var(--muted)}
+
+  footer{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--muted);line-height:1.6}
+  footer b{color:var(--cream);font-weight:600}
+  footer p{margin:0 0 10px}
+  footer p:last-child{margin-bottom:0}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:430px){ .tally{grid-template-columns:1fr 1fr} }
+
+  /* ---- site navigation ---- */
+  .sitenav{position:sticky;top:0;z-index:60;background:rgba(36,21,53,.95);
+    -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+    border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:820px;margin:0 auto;padding:0 14px;display:flex;
+    align-items:center;gap:12px;height:46px}
+  .nav-home{font-family:"Archivo",sans-serif;font-variation-settings:"wdth" 118,"wght" 800;
+    font-size:13px;letter-spacing:.01em;text-transform:uppercase;color:var(--cream);
+    text-decoration:none;flex:none}
+  .nav-home span{color:var(--gold)}
+  .nav-home:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:3px}
+  .nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.07em;
+    text-transform:uppercase;color:var(--muted);text-decoration:none;padding:6px 10px;
+    border-radius:999px;white-space:nowrap}
+  .nav-links a:hover{color:var(--cream)}
+  .nav-links a[aria-current=page]{background:var(--cream);color:var(--ink);font-weight:500}
+  .nav-links a:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+</style>
+</head>
+<body>
+<nav class="sitenav">
+  <div class="nav-inner">
+    <a class="nav-home" href="index.html">WDW<span>Dining</span></a>
+    <div class="nav-links">
+        <a href="atlas.html">Atlas</a>
+        <a href="value.html">Value</a>
+        <a href="quick-service.html">Quick Service</a>
+        <a href="snacks.html">Snacks</a>
+        <a href="drinking.html" aria-current="page">Drink the World</a>
+    </div>
+  </div>
+</nav>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">EPCOT / World Showcase / 11 pavilions</p>
+  <h1>Drinking around<br>the <em>world</em></h1>
+  <p class="lede">A passport for the lap. Pick your direction, log what you drink, collect the stamps. It counts <b>standard drinks as you go</b>, because eleven countries is a much bigger number than it sounds like and most people who finish this did it by splitting every pour.</p>
+</header>
+
+<div class="passport">
+  <div class="pp-head">
+    <span class="pp-lab">World Showcase passport</span>
+    <span class="pp-count" id="ppCount">0 / 11</span>
+  </div>
+  <div class="stamps" id="stamps"></div>
+  <div class="tally">
+    <div><p class="t-lab">Pavilions</p><p class="t-val" id="tStops">0</p></div>
+    <div><p class="t-lab">Standard drinks</p><p class="t-val" id="tDrinks">0.0</p></div>
+    <div><p class="t-lab">Water stops</p><p class="t-val cool" id="tWater">0</p></div>
+    <div><p class="t-lab">Spent</p><p class="t-val" id="tSpend">$0</p></div>
+  </div>
+</div>
+
+<div class="setup">
+  <div class="srow">
+    <p class="flabel">Which way round</p>
+    <div class="chips">
+      <button class="chip" id="dirMX" aria-pressed="true">Mexico first</button>
+      <button class="chip" id="dirCA" aria-pressed="false">Canada first</button>
+    </div>
+  </div>
+  <div class="srow">
+    <p class="flabel">Are you splitting pours</p>
+    <div class="chips">
+      <button class="chip share" id="split2" aria-pressed="true">Splitting with someone</button>
+      <button class="chip" id="split1" aria-pressed="false">Drinking solo</button>
+    </div>
+  </div>
+  <div class="srow"><button class="resetbtn" id="resetBtn">Clear the passport</button></div>
+</div>
+
+<div class="reality" id="reality"></div>
+
+<ol id="route"></ol>
+
+<footer>
+  <p><b>Where to start.</b> Mexico first is the classic lap if you come in the main entrance, since you hit the two strongest bars early. Canada first is better from the International Gateway or if you are staying at a BoardWalk-area resort, and it has the advantage of putting Germany's big pours near the end rather than at stop four.</p>
+  <p><b>Standard drink estimates</b> assume a US standard drink of 0.6 fl oz of pure alcohol. Pour sizes at World Showcase vary a lot and the counts here are approximations, not measurements. Germany's large stein alone is roughly three of them. Prices are estimates and move constantly.</p>
+  <p><b>Practical stuff.</b> The lap is about 1.2 miles, so it takes longer than people expect and that is a good thing. Eat somewhere in the middle, use the water stops, and take Disney transportation or a rideshare. Cast members will cut you off and can decline service, and nobody wants their day to end at first aid.</p>
+  <p style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.55">Passport build 1 &middot; 21+</p>
+</footer>
+
+</div>
+
+<script>
+/* ---- storage shim -------------------------------------------------------
+   Inside the Claude artifact sandbox a window.storage API is provided.
+   On a normal web host it is not, so fall back to localStorage and keep
+   saved baskets and shortlists working. Degrades to in-memory if both
+   are unavailable (private browsing, storage disabled).                     */
+(function(){
+  if(window.storage && typeof window.storage.get === "function") return;
+  var mem = {};
+  var ok = false;
+  try{ window.localStorage.setItem("__t","1"); window.localStorage.removeItem("__t"); ok = true; }catch(e){ ok = false; }
+  var K = function(k){ return "wdw-dining:" + k; };
+  window.storage = {
+    get: function(k){
+      try{
+        var v = ok ? window.localStorage.getItem(K(k)) : (mem[k] === undefined ? null : mem[k]);
+        return Promise.resolve(v === null ? null : {key:k, value:v, shared:false});
+      }catch(e){ return Promise.resolve(null); }
+    },
+    set: function(k,v){
+      try{
+        if(ok) window.localStorage.setItem(K(k), v); else mem[k] = v;
+      }catch(e){ mem[k] = v; }
+      return Promise.resolve({key:k, value:v, shared:false});
+    },
+    delete: function(k){
+      try{ if(ok) window.localStorage.removeItem(K(k)); else delete mem[k]; }catch(e){}
+      return Promise.resolve({key:k, deleted:true, shared:false});
+    },
+    list: function(){ return Promise.resolve({keys:[], shared:false}); }
+  };
+})();
+
+/* sd = approximate US standard drinks per serving
+   Route is stored west-to-east (Mexico first) and reversed on demand. */
+const ACCENT = ["--gold","--cyan","--coral","--green","--violet"];
+
+const ROUTE = [
+{t:"stop",code:"MX",n:"Mexico",sub:"Plaza de los Amigos",
+ tip:"<b>La Cava del Tequila</b> is inside the pyramid and is one of the best bars on property, with over two hundred tequilas. Expect a wait for a seat. Choza de Margarita outside is the faster option.",
+ pours:[
+  {n:"Avocado Margarita",w:"La Cava del Tequila",pr:18,sd:1.5},
+  {n:"Blood Orange Margarita",w:"Choza de Margarita",pr:16,sd:1.5},
+  {n:"Dos Equis draft",w:"La Cantina de San Angel",pr:11,sd:1.0}]},
+
+{t:"rest",code:"H2O",n:"Water and a breather",sub:"Between Mexico and Norway",
+ tip:"Ask any counter for a cup of ice water. It is free everywhere on property and they are required to give it to you. Do this now rather than when you need it."},
+
+{t:"stop",code:"NO",n:"Norway",sub:"Kringla Bakeri og Kafe",
+ tip:"The weakest pavilion for drinks and the best one for food. Grab <b>school bread</b> here. It is $5.49 and it will do more for the back half of your lap than anything else on this list.",
+ pours:[
+  {n:"Viking Coffee",w:"Kringla Bakeri",pr:13,sd:1.0},
+  {n:"Carlsberg draft",w:"Kringla Bakeri",pr:11,sd:1.0}]},
+
+{t:"stop",code:"CN",n:"China",sub:"Joy of Tea",
+ tip:"<b>Tipsy Ducks in Love</b> is the one everyone orders and it is essentially a boozy iced coffee. Nine Dragons has a fuller list if you want to sit down in the air conditioning.",
+ pours:[
+  {n:"Tipsy Ducks in Love",w:"Joy of Tea",pr:14,sd:1.0},
+  {n:"Kung Fu Punch",w:"Joy of Tea",pr:13,sd:1.0},
+  {n:"Plum wine",w:"Nine Dragons",pr:12,sd:1.0}]},
+
+{t:"stop",code:"DE",n:"Germany",sub:"Sommerfest and Weinkeller",
+ tip:"<b>The pacing trap.</b> The large German pour is roughly three standard drinks on its own, which is a quarter of the whole lap in one cup. Order the small, or split the large two ways and treat it as your Germany stop plus your Italy stop.",
+ pours:[
+  {n:"Large German draft",w:"Sommerfest",pr:16,sd:3.0},
+  {n:"Small German draft",w:"Sommerfest",pr:11,sd:1.5},
+  {n:"German wine flight",w:"Weinkeller",pr:17,sd:1.5},
+  {n:"Grapefruit radler",w:"Sommerfest",pr:12,sd:1.0}]},
+
+{t:"stop",code:"IT",n:"Italy",sub:"Tutto Gusto Wine Cellar",
+ tip:"<b>Tutto Gusto</b> is a genuinely good wine bar hidden behind Tutto Italia, with a walk-up list and small plates. The best place on the lap to sit down and slow the pace deliberately.",
+ pours:[
+  {n:"Bellini",w:"Tutto Gusto",pr:14,sd:1.0},
+  {n:"Aperol Spritz",w:"Tutto Gusto",pr:15,sd:1.0},
+  {n:"Italian wine by the glass",w:"Enoteca Castello",pr:13,sd:1.0}]},
+
+{t:"rest",code:"EAT",n:"Real food, not a pretzel",sub:"American Adventure",
+ tip:"You are halfway. <b>Regal Eagle Smokehouse</b> is right here and is the best full meal in World Showcase for the money. Eating now is the single biggest thing you can do for how the rest of this goes."},
+
+{t:"stop",code:"US",n:"American Adventure",sub:"Block & Hans, Fife & Drum",
+ tip:"<b>Block & Hans</b> has a proper American craft list and the pretzel nuggets with beer cheese. The frozen wine slush at Fife & Drum is the sweeter, easier option.",
+ pours:[
+  {n:"Frozen wine slush",w:"Fife & Drum",pr:13,sd:1.0},
+  {n:"Craft draft",w:"Block & Hans",pr:12,sd:1.3},
+  {n:"Spiked lemonade",w:"Fife & Drum",pr:13,sd:1.0}]},
+
+{t:"stop",code:"JP",n:"Japan",sub:"Mitsukoshi and Kabuki Cafe",
+ tip:"The <b>sake flight</b> at the Mitsukoshi bar is the move, and the staff will actually walk you through it. Kabuki Cafe outside does frozen kakigori, including a version with sake.",
+ pours:[
+  {n:"Sake flight",w:"Mitsukoshi bar",pr:17,sd:1.5},
+  {n:"Kirin Ichiban draft",w:"Kabuki Cafe",pr:11,sd:1.0},
+  {n:"Frozen kakigori with sake",w:"Kabuki Cafe",pr:13,sd:1.0}]},
+
+{t:"stop",code:"MA",n:"Morocco",sub:"Spice Road Table",
+ tip:"The emptiest pavilion in World Showcase and the best waterfront seating you can get without a reservation. <b>Spice Road Table</b> takes walk-ups when everywhere else is slammed.",
+ pours:[
+  {n:"Moroccan wine",w:"Spice Road Table",pr:14,sd:1.0},
+  {n:"Sultan's Colada",w:"Spice Road Table",pr:15,sd:1.2},
+  {n:"Casa Beer",w:"Tangierine Cafe",pr:11,sd:1.0}]},
+
+{t:"stop",code:"FR",n:"France",sub:"Les Vins des Chefs de France",
+ tip:"<b>The orange slush is the single most famous drink on the lap</b> and it deserves it. Grand Marnier over frozen orange. Do not skip this one to save a slot.",
+ pours:[
+  {n:"Grand Marnier orange slush",w:"Les Vins des Chefs de France",pr:16,sd:1.5},
+  {n:"Champagne or French wine",w:"La Cave",pr:15,sd:1.0},
+  {n:"Ice cream martini",w:"L'Artisan des Glaces",pr:16,sd:1.2}]},
+
+{t:"rest",code:"H2O",n:"Second water stop",sub:"International Gateway",
+ tip:"Two pavilions left and this is where people misjudge it. Water here, and note that the <b>International Gateway exit</b> is right beside you if you want to walk to a BoardWalk-area resort instead of crossing the whole park."},
+
+{t:"stop",code:"UK",n:"United Kingdom",sub:"Rose & Crown Pub",
+ tip:"A convincing pub with a piano player who has worked the room for years. Walk-up bar seating is usually free even when the dining room is fully booked. Ask for a <b>Snakebite</b>, which is not on the menu.",
+ pours:[
+  {n:"Pint of Guinness",w:"Rose & Crown Pub",pr:12,sd:1.3},
+  {n:"Snakebite",w:"Rose & Crown Pub",pr:13,sd:1.4},
+  {n:"Bass or Strongbow",w:"Rose & Crown Pub",pr:11,sd:1.2}]},
+
+{t:"stop",code:"CA",n:"Canada",sub:"Refreshment stand and Le Cellier",
+ tip:"The last stamp, and the quietest pavilion to finish in. The gardens below the trail are a good place to sit. <b>Le Cellier's ice wine</b> is the nicer finish if you can get a seat at the bar.",
+ pours:[
+  {n:"Moosehead lager",w:"Canada beer stand",pr:11,sd:1.0},
+  {n:"Ice wine",w:"Le Cellier",pr:16,sd:1.0},
+  {n:"Canadian whisky",w:"Le Cellier",pr:15,sd:1.0}]}
+];
+
+let dir = "MX";
+let split = 2;
+let picks = {};   /* code -> drink name, or "__rest" for rest stops */
+
+const $ = function(id){ return document.getElementById(id); };
+const esc = function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); };
+const keyOf = function(s, i){ return s.code + ":" + i; };
+
+function ordered(){
+  const r = ROUTE.map(function(s,i){ return {s:s, k:keyOf(s,i)}; });
+  return dir === "MX" ? r : r.slice().reverse();
+}
+const stops = function(){ return ROUTE.filter(function(s){ return s.t === "stop"; }); };
+
+function findPour(s, name){
+  if(!s.pours) return null;
+  return s.pours.filter(function(p){ return p.n === name; })[0] || null;
+}
+
+function totals(){
+  let n = 0, sd = 0, spend = 0, water = 0;
+  ROUTE.forEach(function(s,i){
+    const v = picks[keyOf(s,i)];
+    if(!v) return;
+    if(s.t === "rest"){ water++; return; }
+    const p = findPour(s, v);
+    if(!p) return;
+    n++;
+    sd += p.sd / split;
+    spend += p.pr / split;
+  });
+  return {n:n, sd:sd, spend:spend, water:water};
+}
+
+async function load(){
+  try{
+    const r = await window.storage.get("epcot-passport");
+    if(r && r.value){
+      const o = JSON.parse(r.value);
+      dir = o.dir || "MX";
+      split = o.split || 2;
+      picks = o.picks || {};
+    }
+  }catch(e){}
+  render();
+}
+async function persist(){
+  try{ await window.storage.set("epcot-passport", JSON.stringify({dir:dir, split:split, picks:picks})); }catch(e){}
+}
+
+function renderStamps(){
+  const host = $("stamps");
+  host.innerHTML = "";
+  let ci = 0;
+  ordered().forEach(function(o){
+    if(o.s.t !== "stop") return;
+    const on = !!picks[o.k];
+    const col = "var(" + ACCENT[ci % ACCENT.length] + ")";
+    ci++;
+    const b = document.createElement("button");
+    b.className = "stamp" + (on ? " on" : "");
+    b.textContent = o.s.code;
+    b.setAttribute("aria-pressed", on);
+    b.setAttribute("aria-label", o.s.n + (on ? ", stamped" : ", not yet"));
+    if(on){
+      b.style.color = col;
+      b.style.borderColor = col;
+      b.style.transform = "rotate(" + (((ci * 37) % 17) - 8) + "deg)";
+    }
+    b.onclick = function(){
+      const el = document.getElementById("stop-" + o.k);
+      if(el && el.scrollIntoView) el.scrollIntoView({behavior:"smooth", block:"center"});
+    };
+    host.appendChild(b);
+  });
+}
+
+function renderTally(){
+  const t = totals();
+  $("ppCount").textContent = t.n + " / " + stops().length;
+  $("tStops").textContent = t.n;
+  $("tWater").textContent = t.water;
+  $("tSpend").textContent = "$" + t.spend.toFixed(0);
+  const d = $("tDrinks");
+  d.textContent = t.sd.toFixed(1);
+  d.className = "t-val" + (t.sd >= 6 ? " hot" : (t.sd >= 3 ? " warn" : ""));
+
+  const box = $("reality");
+  const left = stops().length - t.n;
+  if(t.n === 0){
+    box.className = "reality";
+    box.innerHTML = 'A full lap at these pours is roughly <span class="num">14 standard drinks</span> solo, or <span class="num">7</span> split two ways. That is the honest number, and it is why the splitting toggle is on by default. Nothing here is a dare.';
+  }else if(t.sd < 3){
+    box.className = "reality";
+    box.innerHTML = '<span class="num">' + t.sd.toFixed(1) + '</span> standard drinks in, <b>' + left + ' pavilions to go</b>. Good pace. Keep hitting the water stops and get real food around the American Adventure.';
+  }else if(t.sd < 6){
+    box.className = "reality warn";
+    box.innerHTML = '<span class="num">' + t.sd.toFixed(1) + '</span> standard drinks. That is a full night out already, and there are <b>' + left + ' pavilions left</b>. This is the point to eat something and slow down, or to start splitting whatever you have not been splitting.';
+  }else{
+    box.className = "reality hot";
+    box.innerHTML = '<span class="num">' + t.sd.toFixed(1) + '</span> standard drinks. <b>The stamps are not worth it from here.</b> Finishing the lap is optional and the pavilions will still be there tomorrow. Water, food, and a bus or a rideshare. Nobody is driving.';
+  }
+}
+
+function renderRoute(){
+  const host = $("route");
+  host.innerHTML = "";
+  let idx = 0;
+  ordered().forEach(function(o){
+    const s = o.s, k = o.k, chosen = picks[k];
+    const li = document.createElement("li");
+    li.id = "stop-" + k;
+    li.className = "stop" + (s.t === "rest" ? " rest" : "") + (chosen ? " done" : "");
+    if(s.t === "stop") idx++;
+
+    const p = [];
+    p.push('<div class="s-head">');
+    p.push('<span class="s-idx">' + (s.t === "stop" ? String(idx).padStart(2,"0") : "&middot;&middot;") + '</span>');
+    p.push('<div class="s-main">');
+    p.push('<p class="s-name">' + esc(s.n) + '</p>');
+    p.push('<p class="s-sub">' + esc(s.sub) + '</p>');
+
+    if(s.t === "stop"){
+      p.push('<div class="pours">');
+      s.pours.forEach(function(pr){
+        const on = chosen === pr.n;
+        p.push('<button class="pour' + (on ? " on" : "") + '" data-k="' + k + '" data-p="' + esc(pr.n) + '" aria-pressed="' + on + '">');
+        p.push('<span class="p-tick"></span>');
+        p.push('<span class="p-body"><span class="p-name">' + esc(pr.n) + '</span><span class="p-where">' + esc(pr.w) + '</span></span>');
+        p.push('<span class="p-stats"><b>$' + pr.pr + '</b>' + pr.sd.toFixed(1) + ' std</span>');
+        p.push('</button>');
+      });
+      p.push('</div>');
+      if(chosen) p.push('<button class="skip" data-clear="' + k + '">Undo this stamp</button>');
+    }else{
+      p.push('<button class="pour' + (chosen ? " on" : "") + '" data-k="' + k + '" data-p="__rest" aria-pressed="' + !!chosen + '">');
+      p.push('<span class="p-tick"></span>');
+      p.push('<span class="p-body"><span class="p-name">' + (chosen ? "Done" : "Mark this done") + '</span></span>');
+      p.push('<span class="p-stats"><b>free</b>0.0 std</span>');
+      p.push('</button>');
+    }
+
+    p.push('<p class="s-tip">' + s.tip + '</p>');
+    p.push('</div></div>');
+    li.innerHTML = p.join("");
+    host.appendChild(li);
+  });
+
+  Array.prototype.forEach.call(host.querySelectorAll("[data-p]"), function(b){
+    b.onclick = function(){
+      const k = b.getAttribute("data-k"), v = b.getAttribute("data-p");
+      if(picks[k] === v) delete picks[k]; else picks[k] = v;
+      persist(); render();
+    };
+  });
+  Array.prototype.forEach.call(host.querySelectorAll("[data-clear]"), function(b){
+    b.onclick = function(){
+      delete picks[b.getAttribute("data-clear")];
+      persist(); render();
+    };
+  });
+}
+
+function render(){
+  $("dirMX").setAttribute("aria-pressed", dir === "MX");
+  $("dirCA").setAttribute("aria-pressed", dir === "CA");
+  $("split2").setAttribute("aria-pressed", split === 2);
+  $("split1").setAttribute("aria-pressed", split === 1);
+  renderStamps(); renderTally(); renderRoute();
+}
+
+$("dirMX").onclick = function(){ dir = "MX"; persist(); render(); };
+$("dirCA").onclick = function(){ dir = "CA"; persist(); render(); };
+$("split2").onclick = function(){ split = 2; persist(); render(); };
+$("split1").onclick = function(){ split = 1; persist(); render(); };
+$("resetBtn").onclick = function(){ picks = {}; persist(); render(); };
+
+load();
+</script>
+</body>
+</html>

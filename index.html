@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WDW Dining &middot; Four tools for eating at Walt Disney World</title>
+<title>WDW Dining &middot; Five tools for eating at Walt Disney World</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23241535%27/%3E%3Ccircle cx=%2716%27 cy=%2717%27 r=%277%27 fill=%27%23F2B544%27/%3E%3Ccircle cx=%278%27 cy=%279%27 r=%274%27 fill=%27%233FD0C9%27/%3E%3Ccircle cx=%2724%27 cy=%279%27 r=%274%27 fill=%27%23FF7A5A%27/%3E%3C/svg%3E">
 <meta name="theme-color" content="#241535">
-<meta name="description" content="Four interactive planning tools for eating at Walt Disney World: a full dining atlas, quick-service credit value math, and a snack credit allocator.">
+<meta name="description" content="Five interactive planning tools for eating and drinking at Walt Disney World: a full dining atlas, quick-service value math, a snack credit allocator, and a World Showcase drinking passport.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=DM+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
   :root{
     --ink:#241535; --panel:#31204A; --panel-2:#3B2758; --line:#4B3369;
     --cyan:#3FD0C9; --coral:#FF7A5A; --gold:#F2B544; --cream:#F6EFE4; --muted:#A28CC0;
-    --dim:#6B5486; --green:#8FD35C;
+    --dim:#6B5486; --green:#8FD35C; --violet:#C48BF0;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
@@ -57,7 +57,6 @@
     padding:5px 11px;color:var(--muted)}
   .stat b{color:var(--cream);font-weight:500}
 
-  /* ---- decision strip ---- */
   .decide{background:var(--panel);border:1px solid var(--line);border-radius:11px;
     padding:16px;margin-bottom:22px}
   .decide h2{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.16em;
@@ -71,7 +70,6 @@
   .dq a:hover{color:var(--cream);border-color:var(--cream)}
   .dq a:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
 
-  /* ---- tool cards ---- */
   .grid{display:grid;gap:11px;margin-bottom:26px}
   .card{display:block;text-decoration:none;color:inherit;background:var(--panel);
     border:1px solid var(--line);border-radius:11px;padding:17px;
@@ -97,6 +95,8 @@
   .card.value .c-num,.card.value .go{color:var(--cyan)}
   .card.qs .c-num,.card.qs .go{color:var(--coral)}
   .card.snack .c-num,.card.snack .go{color:var(--green)}
+  .card.drink .c-num,.card.drink .go{color:var(--violet)}
+  .card.drink{border-color:rgba(196,139,240,.3)}
 
   h3.sec{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.16em;
     text-transform:uppercase;color:var(--muted);margin:0 0 12px;font-weight:400;
@@ -124,6 +124,7 @@
       <a href="value.html">Value</a>
       <a href="quick-service.html">Quick Service</a>
       <a href="snacks.html">Snacks</a>
+      <a href="drinking.html">Drink the World</a>
     </div>
   </div>
 </nav>
@@ -132,12 +133,13 @@
 
 <header>
   <p class="eyebrow">Walt Disney World / Updated July 2026</p>
-  <h1>Four tools for<br><em>eating</em> at Disney</h1>
-  <p class="lede">Not a blog and not a list of favorites. These are <b>calculators with opinions</b>: one maps every restaurant on property against how good the food is versus how much the room does for you, two do the arithmetic on whether the dining plan is earning its price, and one allocates snack credits. Everything runs in the browser and nothing is tracked.</p>
+  <h1>Five tools for<br><em>eating</em> at Disney</h1>
+  <p class="lede">Not a blog and not a list of favorites. These are <b>calculators with opinions</b>: one maps every restaurant on property against how good the food is versus how much the room does for you, two do the arithmetic on whether the dining plan is earning its price, one allocates snack credits, and one is a passport for a lap of World Showcase. Everything runs in the browser and nothing is tracked.</p>
   <div class="stats">
     <span class="stat"><b>134</b> restaurants</span>
     <span class="stat"><b>112</b> snacks</span>
     <span class="stat"><b>88</b> quick-service counters</span>
+    <span class="stat"><b>11</b> pavilions</span>
     <span class="stat">no accounts, no tracking</span>
   </div>
 </header>
@@ -148,6 +150,7 @@
   <div class="dq"><span class="dq-q">I have the plan and want to know if it's paying for itself.</span><a href="value.html">Break-Even &rarr;</a></div>
   <div class="dq"><span class="dq-q">I need plant-based options weighted into the ranking.</span><a href="quick-service.html">Quick Service &rarr;</a></div>
   <div class="dq"><span class="dq-q">I have snack credits and no idea what to do with them.</span><a href="snacks.html">Snacks &rarr;</a></div>
+  <div class="dq"><span class="dq-q">We're doing a lap of World Showcase.</span><a href="drinking.html">Drink the World &rarr;</a></div>
 </div>
 
 <div class="grid">
@@ -155,9 +158,9 @@
   <a class="card atlas" href="atlas.html">
     <div class="c-head"><span class="c-num">01</span><h2 class="c-title">The Dining Atlas</h2></div>
     <p class="c-sub">All dining &middot; no dining plan required</p>
-    <p class="c-body">Every restaurant, lounge, and counter worth knowing, plotted on two axes that nobody separates: <b>food quality</b> and <b>immersion</b>. At Disney these often run in opposite directions, which is how you end up paying $95 for a castle view and airline food. Four quadrants, live status warnings for anything closed or under refurbishment.</p>
+    <p class="c-body">Every restaurant, lounge, and counter worth knowing, plotted on two axes that nobody separates: <b>food quality</b> and <b>immersion</b>. At Disney these often run in opposite directions, which is how you end up paying $95 for a castle view and airline food. Four quadrants, live status warnings, and a menu panel on every entry.</p>
     <div class="c-foot">
-      <span class="tag">134 places</span><span class="tag">scatter map</span><span class="tag">what to order</span>
+      <span class="tag">134 places</span><span class="tag">scatter map</span><span class="tag">live menus</span>
       <span class="go">Open &rarr;</span>
     </div>
   </a>
@@ -192,6 +195,16 @@
     </div>
   </a>
 
+  <a class="card drink" href="drinking.html">
+    <div class="c-head"><span class="c-num">05</span><h2 class="c-title">Drink the World</h2></div>
+    <p class="c-sub">EPCOT &middot; World Showcase &middot; 21+</p>
+    <p class="c-body">A passport for the classic lap. Pick your direction, log each pour, collect eleven stamps. It runs a <b>standard drink count</b> as you go, because a full lap is roughly 14 of them solo and that number belongs on screen rather than buried in a disclaimer. Splitting is the default and water stops are part of the route.</p>
+    <div class="c-foot">
+      <span class="tag">11 pavilions</span><span class="tag">passport</span><span class="tag">pacing</span>
+      <span class="go">Open &rarr;</span>
+    </div>
+  </a>
+
 </div>
 
 <h3 class="sec">What to trust and what not to</h3>
@@ -199,6 +212,8 @@
   <p><b>Prices are estimates.</b> They were built from current reporting and they move constantly. Use them to rank options against each other, not to budget to the dollar. The break-even math is only as good as the plan price you enter, so check what you actually paid.</p>
   <p><b>The scores are opinions.</b> Food and immersion ratings in the Atlas are a synthesis of critical consensus, not measured data. They encode judgments you may disagree with. California Grill sits at a 6 for food against a 9 for the room, because the room is still the best on property and the current menu has been widely criticized as coasting. Reasonable people rate that differently.</p>
   <p><b>Eligibility shifts.</b> Whether an item takes a credit can change between locations and between visits. Anything marked <b>check the board</b> is exactly that. Confirm in My Disney Experience before you build a day around a specific meal, and look for the purple DDP symbol on the menu before you scan.</p>
+  <p><b>Standard drink counts are approximations.</b> Pour sizes at World Showcase vary widely and are not published. The counts in the passport are estimates meant to keep the total visible, not a substitute for paying attention to how you feel.</p>
+  <p><b>Menus are linked, not copied.</b> Disney rotates menus constantly and publishes them per location, so every restaurant has a button that opens the current official menu rather than a snapshot that goes stale. Where specific dishes and prices were verified they are listed inline; where they were not, the panel says so instead of guessing.</p>
   <p><b>Currency.</b> Everything reflects July 2026, including closures, refurbishments, and the 2026 plan pricing. Disney's construction pace means this will drift.</p>
 </div>
 
